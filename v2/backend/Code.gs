@@ -28,7 +28,7 @@ function audioFolderId_() {
  *
  *  ★ 這份清單必須跟 config.js 的 classes 一模一樣。
  *    改完要重新部署（部署 → 管理部署作業 → 編輯 → 新版本）。 */
-var ALLOWED_CLASSES = ['2026-fall'];
+var ALLOWED_CLASSES = ['2026-fall', '2026-fall-A', '2026-fall-B'];
 
 /* ═══════════════════════════════════════════════════════════
    以下不用改

@@ -18,7 +18,7 @@ window.HPL_CONFIG = {
 
      ★ 這份清單必須跟 backend/Code.gs 的 ALLOWED_CLASSES 一模一樣，
        否則學生存得下去、後端會擋掉。                            */
-  classes: ["2026-fall"],
+  classes: ["2026-fall", "2026-fall-A", "2026-fall-B"],
   classId: "2026-fall",
 
   /* ── 2. 音檔要從哪裡來 ──────────────────────────────────────
