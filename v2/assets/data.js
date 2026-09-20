@@ -108,7 +108,8 @@
     var c = files.course.doc;
     D.steps = objs(sec(c, "四個步驟"));
     D.triage = objs(sec(c, "三分類"));
-    D.roles = objs(sec(c, "六人角色"));
+    D.roles = objs(sec(c, "分工建議")) ;
+    if (!D.roles.length) D.roles = objs(sec(c, "六人角色"));   /* 舊檔名相容 */
     D.advice = objs(sec(c, "對課程邏輯的建議"));
     D.rubricIndex = objs(sec(c, "評分規準"));
     D.srcLevels = objs(sec(c, "來源層級"));

@@ -43,7 +43,7 @@ python3 -m http.server 8000
 | 六個面向底下的現象標籤 | `levels.md` |
 | 母語 × 華語音韻對照表 | `contrast.md` |
 | 糾音知識庫（診斷／操作／最小對立對） | `kb.md` |
-| 四步驟、三分類、六角色、九點建議、評分規準 | `course.md` |
+| 四步驟、三分類、分工建議、對課程的建議、評分規準、來源層級 | `course.md` |
 | 示範學習者的預測檔案 | `learners.md` |
 | 語料庫清單 | `corpora.md` |
 | 給 AI 的任務指令全文 | `prompt.md` |
@@ -73,7 +73,7 @@ python3 -m http.server 8000
 |---|---|
 | `groups.md` | 組別、說明 |
 | `kb.md` | 條目 |
-| `course.md` | 四個步驟、三分類、六人角色、對課程邏輯的建議、評分規準、來源層級 |
+| `course.md` | 四個步驟、三分類、分工建議、對課程邏輯的建議、評分規準、來源層級 |
 | `tagmap.md` | 比對鍵、母語別名、外部基準線、怎麼讀比對結果 |
 
 `levels.md`、`contrast.md`、`learners.md`、`corpora.md` 的 `##` 標題**可以改**——

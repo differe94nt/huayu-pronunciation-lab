@@ -514,7 +514,7 @@ function renderContrast(){
 
 /* ═══ 組員名單（自由填寫）═══
    分工是全組共用的一份，同時編輯會互相覆蓋，所以畫面上明講「一個人填就好」。
-   course.md 的「六人角色」只當成建議清單，塞進 datalist 供選，不強制。 */
+   course.md 的「分工建議」只當成建議清單，塞進 datalist 供選，不強制。 */
 var roster=[], rosterDirty=false;
 
 function readRoster(){
@@ -548,7 +548,7 @@ function paintRoster(){
   $("#roster-hint").textContent=roster.length+" 位";
 }
 function renderRoster(){
-  /* 建議清單：course.md 的六人角色 */
+  /* 建議清單：course.md 的分工建議 */
   $("#job-suggest").innerHTML=(D.roles||[]).map(function(r){
     return '<option value="'+esc(r["角色"])+'">'+esc(r["職責"]||"")+"</option>";}).join("");
   setRoster(null);
