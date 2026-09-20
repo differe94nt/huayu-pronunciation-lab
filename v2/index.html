@@ -228,8 +228,18 @@
     <div class="tscroll"><table>
       <thead><tr><th>面向</th><th>華語項目</th><th>母語情況</th><th>預期偏誤</th></tr></thead>
       <tbody id="ct-rows"></tbody></table></div></div>
-  <div class="block"><h2><span class="tag">層級</span>可靠資料的三個層級</h2>
-    <p>每條規律至少一項 L1 或 L2。查無資料要寫出來，不算失分。</p>
+  <div class="block"><h2><span class="tag">層級</span>可靠資料的四個層級</h2>
+    <p>每條規律至少一項 L0、L1 或 L2。查無資料要寫出來，不算失分。</p>
+    <div class="note" style="margin-bottom:14px">
+      <strong>時間不夠查文獻時，用 L0 就好。</strong>
+      L0 是「我們自己在音檔裡聽到的」——只要寫得出音檔編號與時間碼，
+      別人就能回去驗證，那就是證據。<br>
+      但要記得它撐得起什麼、撐不起什麼：<br>
+      ✅ 可以說「<strong>我們這三位說話人身上出現了這個現象</strong>」<br>
+      ✗ 不能說「<strong>法語母語者都會這樣</strong>」——那要 L1 或 L2 才撐得住。<br>
+      <span class="muted">L3（教學網站、部落格、AI 直接生成的整理）永遠只能當線索，不能當依據。
+      AI 講的東西如果你查不到原始出處，它就是 L3。</span>
+    </div>
     <div class="tscroll"><table>
       <thead><tr><th>層級</th><th>名稱</th><th>例子</th><th>可不可以當唯一依據</th></tr></thead>
       <tbody id="srclv-rows"></tbody></table></div></div>
@@ -240,14 +250,15 @@
         <div class="formgrid g3">
           <div><label class="fld" for="s-rule">對應規律</label><select class="inp" id="s-rule"></select></div>
           <div><label class="fld" for="s-level">來源層級</label><select class="inp" id="s-level">
-            <option>L1 一手研究</option><option>L2 標準參考</option><option>L3 教學經驗</option></select></div>
+            <option>L0 語料本身</option><option>L1 一手研究</option>
+            <option>L2 標準參考</option><option>L3 教學經驗</option></select></div>
           <div><label class="fld" for="s-result">查證結果</label><select class="inp" id="s-result">
             <option>支持</option><option>部分支持</option><option>不支持</option><option>查無資料</option></select></div>
         </div>
         <div style="margin-top:10px"><label class="fld" for="s-cite">書目資訊</label>
-          <input type="text" id="s-cite" placeholder="照抄書目資訊，不要憑印象寫"></div>
+          <input type="text" id="s-cite" placeholder="L0 就寫音檔編號＋時間碼，例：S1 00:37、S2 01:12；L1／L2 照抄書目，不要憑印象寫"></div>
         <div style="margin-top:10px"><label class="fld" for="s-say">它到底講了什麼</label>
-          <input type="text" id="s-say" placeholder="不要寫「研究顯示……」，寫出它到底講了什麼、對象是誰"></div>
+          <input type="text" id="s-say" placeholder="L0 就寫你聽到什麼；L1／L2 寫出它到底講了什麼、對象是誰，不要寫「研究顯示……」"></div>
         <div class="rowbtns" style="margin-top:12px"><button class="act primary" id="btn-add-src">新增查證</button></div>
       </div></div>
     <div class="reclist" id="srclist" style="margin-top:16px"></div></div>
@@ -256,7 +267,8 @@
 <!-- ═══ 四 教 ═══ -->
 <section role="tabpanel" id="p-4" aria-labelledby="tab-4">
   <p class="lede">教學目標必須回指某一條規律編號。分析與教學之間要有形式上的連結，不然會各做各的。</p>
-  <div class="block"><h2><span class="tag">選定</span>主要教學目標</h2>
+  <div class="block"><h2><span class="tag">選定</span>先選一條規律</h2>
+    <p>教哪一個？先把條件設定好，下一個區塊會依照這裡的設定產生跟 AI 討論用的提示詞。</p>
     <div class="panel"><div class="panel-bd">
       <div class="formgrid g3">
         <div><label class="fld" for="t-rule">從成立的規律中選一條</label><select class="inp" id="t-rule"></select></div>
@@ -265,9 +277,25 @@
         <div><label class="fld" for="t-time">教學時間</label><select class="inp" id="t-time">
           <option>單次 20 分鐘</option><option selected>單次 50 分鐘</option><option>兩週分散練習</option></select></div>
       </div>
-      <div style="margin-top:12px"><label class="fld" for="t-why">為什麼選它、為什麼不選其他</label>
-        <textarea id="t-why" rows="3" placeholder="請依 出現情形／是否造成音位混淆／短期內能不能改變／這個程度該不該處理 四點論證，並明確寫出「我們不選 Rx，因為……」"></textarea></div>
-      <div class="rowbtns" style="margin-top:12px"><button class="act" id="btn-save-target">儲存教學目標</button></div>
+    </div></div></div>
+
+  <div class="block"><h2><span class="tag">討論</span>拿這段去跟 AI 討論教案</h2>
+    <p>複製下去問，然後<strong>不要照單全收</strong>——它會提出反對意見，你們要決定接不接受。
+      討論完再回到下一個區塊寫你們的結論。</p>
+    <div class="panel">
+      <div class="panel-hd"><h3>教案討論提示詞</h3>
+        <div class="rowbtns"><button class="act tiny" id="btn-copy-t4">複製</button></div></div>
+      <div class="panel-bd"><pre class="plan" id="t4-prompt" style="margin:0;font-family:var(--f)"></pre></div>
+    </div></div>
+
+  <div class="block"><h2><span class="tag">結論</span>你們決定教這個的理由</h2>
+    <p>跟 AI 討論完之後寫。四個問題各一兩句就好，寫你們自己的判斷，不要貼 AI 的原話。</p>
+    <div class="panel"><div class="panel-bd">
+      <div><label class="fld" for="t-why">為什麼選它、為什麼不選其他</label>
+        <textarea id="t-why" rows="8" placeholder="按下面的「填入骨架」會給你一份填空表，照著填就好"></textarea></div>
+      <div class="rowbtns" style="margin-top:12px">
+        <button class="act" id="btn-why-skel">填入骨架</button>
+        <button class="act primary" id="btn-save-target">儲存教學目標</button></div>
     </div></div></div>
   <div class="block"><h2><span class="tag">關卡</span>一致性檢核</h2>
     <p>教學目標與分析發現對不對得起來。</p><div id="align"></div></div>
@@ -690,7 +718,7 @@ function renderRuleSelects(){
     el.innerHTML=opts||'<option value="">（還沒有成立的規律）</option>';
     if(keep)el.value=keep;
   });
-  renderPrompt(); renderAlign();
+  renderPrompt(); renderT4Prompt(); renderAlign();
 }
 function pickedRule(sel){
   var v=$(sel).value; if(!v)return null;
@@ -768,18 +796,85 @@ $("#btn-add-src").addEventListener("click",function(){
   $("#s-cite").value="";$("#s-say").value="";toast("已新增");
 });
 
+/* ═══ 四教：跟 AI 討論教案的提示詞 ═══
+   步驟四原本只給一句「依四個指標論證」，太抽象。
+   改成直接生成一段可以貼去問 AI 的話，把四個指標寫成具體問題。 */
+function renderT4Prompt(){
+  var g=G(), t=pickedRule("#t-rule");
+  var lvl=$("#t-level").value, time=$("#t-time").value;
+  if(!t){
+    $("#t4-prompt").textContent=
+"（還沒有成立的規律，所以還產生不出來。）\n\n"+
+"回到「一 聽」多標幾筆——同一個現象只要在 2 位說話人身上都出現過、合計 2 次，\n"+
+"就會拿到 R1 編號，這裡就會自動填好。";
+    return;
+  }
+  var kb=D.kb[t.tag]||D.kbDefault;
+  var obs=t.spkN+" 位說話人身上都出現、合計 "+t.total+" 次"+
+    (t.denom?("，出現率約 "+(t.rate*100).toFixed(0)+"%"):"（我們沒有記錄分母，所以只能說有出現，不能說出現率）");
+  var others=rules().filter(function(r){return r.tag!==t.tag;})
+    .map(function(r,i){return r.lv+"·"+r.tag;});
+
+  $("#t4-prompt").textContent=
+"我們是華語教學課的學生，剛聽完一位母語為"+g.l1+"的學習者的錄音，現在要設計一個糾音活動。\n\n"+
+"【我們在語料裡實際聽到的】\n"+
+"現象："+t.lv+" — "+t.tag+"\n"+
+"出現情形："+obs+"\n"+
+(others.length?("我們同時也觀察到："+others.join("、")+"\n"):"")+
+"\n【教學條件】\n學習者程度："+lvl+"\n可用時間："+time+"\n\n"+
+"【請你幫我們想四件事，一項一項回答】\n"+
+"1. 這個現象值不值得當這次的教學目標？請從「會不會讓聽者聽成別的字」來判斷，並直接說出你的結論。\n"+
+(others.length?("2. 我們還觀察到上面那些現象。如果換成教其中一個，會不會比現在這個更值得？請比較，並說明理由。\n")
+              :("2. 以我們目前只觀察到這一個現象來說，這樣的證據夠不夠支撐一個教學目標？不夠的話，我們還需要再聽什麼？\n"))+
+"3. "+lvl+"的學習者，在"+time+"裡有沒有可能改變這一項？如果不可能，請直說，並建議一個比較實際的目標。\n"+
+"4. 請設計這個活動的流程。我們已經知道的操作要領是：\n   「"+(kb.p||"（無）")+"」\n"+
+"   請不要重複這一段，直接補上你認為缺的部分，並給出具體的練習詞（至少 6 個）。\n\n"+
+"【重要】\n"+
+"．請至少提出一個「我們可能想錯了」的地方，不要只順著我們講。\n"+
+"．你舉的例詞如果不確定是否真的構成最小對立對，請標註出來，我們會自己查。\n"+
+"．不要用「研究顯示」這種句式，除非你講得出是誰、什麼時候、對象是誰。\n"+
+"．最後請告訴我們：這個活動裡有哪一部分是你判斷不了、只能由老師現場看著學習者才能決定的？";
+}
+["#t-rule","#t-level","#t-time"].forEach(function(s){
+  var el=$(s); if(el)el.addEventListener("change",renderT4Prompt);
+});
+$("#btn-copy-t4").addEventListener("click",function(){
+  copyText($("#t4-prompt").textContent,"教案討論提示詞");});
+
+/* 論證骨架：把四個抽象指標變成填空 */
+$("#btn-why-skel").addEventListener("click",function(){
+  var t=pickedRule("#t-rule");
+  if(!t){toast("請先選一條規律");return;}
+  var cur=$("#t-why").value.trim();
+  if(cur&&!confirm("這會蓋掉你已經寫的內容，確定嗎？"))return;
+  var others=rules().filter(function(r){return r.tag!==t.tag;});
+  $("#t-why").value=
+"我們選 "+t.rid+"（"+t.tag+"）當教學目標，理由如下：\n\n"+
+"1. 出現情形：我們在　　位說話人身上聽到，合計　　次。（時間碼：　　）\n"+
+"2. 會不會聽成別的字：　　　　（會／不會，舉一個例子說明）\n"+
+"3. 短期內能不能改變："+"　　　　（能／不能，為什麼）\n"+
+"4. 這個程度該不該處理："+"　　　　\n\n"+
+(others.length
+  ? ("我們不選 "+others.map(function(r,i){return r.tag;}).join("、")+"，因為　　　　\n\n")
+  : "我們目前只有這一條成立的規律，所以沒有其他候選項可以比較。\n\n")+
+"跟 AI 討論之後，我們改變想法的地方是：　　　　\n"+
+"（如果完全沒改變，也寫出來，並說明為什麼不接受它的意見）";
+  $("#t-why").focus(); markDirty($("#t-why")); renderAlign();
+  toast("填好空格就完成了");
+});
+
 /* ═══ 一致性 ═══ */
 function renderAlign(){
   var t=pickedRule("#t-rule"), why=$("#t-why").value.trim();
   var srcs=HPLStore.get("src").filter(function(s){return t&&s.rule===t.rid;});
-  var strong=srcs.filter(function(s){return /L1|L2/.test(s.level)&&s.result!=="不支持";});
+  var strong=srcs.filter(function(s){return /L0|L1|L2/.test(s.level)&&s.result!=="不支持";});
   var ais=HPLStore.get("ai").filter(function(a){return t&&a.rule===t.rid;});
   var cs=[
     [!!t,"已從成立的規律中選定教學目標"],
     [why.length>TARGETS().why,"選擇理由已依四個指標論證（目前 "+why.length+" 字）"],
     [/不選|沒有選|未選/.test(why),"理由中明確寫出「我們不選 Rx，因為……」"],
     [srcs.length>0,"這條規律有查證紀錄（"+srcs.length+" 筆）"],
-    [strong.length>0,"其中至少一筆是 L1 或 L2 層級"],
+    [strong.length>0,"其中至少一筆是 L0、L1 或 L2 層級"],
     [ais.length>0,"這條規律有對應的 AI 協作紀錄"]
   ];
   $("#align").innerHTML='<div class="steps">'+cs.map(function(c){
@@ -885,7 +980,7 @@ function renderSubmitCheck(){
     [!CFG.requireDenominator||withDenom>0,"至少有記錄分母的觀察（目前 "+withDenom+" 筆）"],
     [HPLStore.get("ai").length>=T.ai,"至少 "+T.ai+" 則 AI 協作紀錄（目前 "+HPLStore.get("ai").length+" 則）"],
     [HPLStore.get("src").length>=T.src,"至少 "+T.src+" 筆查證紀錄（目前 "+HPLStore.get("src").length+" 筆）"],
-    [HPLStore.get("src").filter(function(s){return /L1|L2/.test(s.level);}).length>0,"其中至少 1 筆是 L1 或 L2 層級"],
+    [HPLStore.get("src").filter(function(s){return /L0|L1|L2/.test(s.level);}).length>0,"其中至少 1 筆是 L0、L1 或 L2（L3 只能當線索）"],
     [!!t,"已選定教學目標並綁定規律編號"],
     [$("#t-why").value.trim().length>TARGETS().why,"教學目標的選擇理由已論證"],
     [!!m.ttFb,"已完成五分鐘試教並記錄回饋"]
