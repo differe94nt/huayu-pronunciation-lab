@@ -47,10 +47,26 @@
   <div class="block"><h2><span class="tag">判準</span>三分類：什麼才值得教</h2>
     <p>教學目標只能從 A、B 中選；報告必須明確列出判為 C 的項目。</p>
     <div class="triage" id="triage"></div></div>
-  <div class="block"><h2><span class="tag">分工</span>六人角色</h2>
-    <p>按角色分，不要按步驟接力。硬規定：六個人都要聽完三份錄音。</p>
-    <div class="roles" id="roles"></div>
-    <div class="rowbtns" style="margin-top:12px"><button class="act" id="btn-save-roles">儲存分工</button></div></div>
+  <div class="block"><h2><span class="tag">分工</span>組員與分工</h2>
+    <p>姓名和分工都可以自己打。分工欄點一下會跳出建議，也可以完全不照建議寫。</p>
+
+    <div class="note warn" style="margin-bottom:14px">
+      <strong>這一區請「一個人」填就好。</strong>
+      分工、校準結果、教學目標、反思這幾塊是全組共用一份，
+      <strong>兩個人同時儲存，後存的會蓋掉先存的</strong>。建議由統整的人負責這幾個儲存按鈕。
+      <br><br>
+      <strong>其他人不會閒著</strong>——新增觀察、AI 協作紀錄、查證紀錄這三種是
+      <strong>各自獨立的記錄，可以同時做、不會互相覆蓋</strong>。
+      所以其他人請直接去標註、去跟 AI 對話並記錄，不用等這一區填完。
+    </div>
+
+    <div id="roster"></div>
+    <datalist id="job-suggest"></datalist>
+    <div class="rowbtns" style="margin-top:12px">
+      <button class="act" id="btn-add-member">＋ 新增一位</button>
+      <button class="act primary" id="btn-save-roles">儲存分工</button>
+      <span class="muted" id="roster-hint"></span>
+    </div></div>
 </section>
 
 <!-- ═══ 可能出現的偏誤 ═══ -->
@@ -403,9 +419,7 @@ function renderStatic(){
   $("#triage").innerHTML=D.triage.map(function(t){
     return '<div class="tri '+esc(t["類別"])+'"><h5><span class="chip '+esc(t["類別"])+'">'+esc(t["類別"])+
       "</span>"+esc(t["名稱"])+"</h5><p>"+esc(t["說明"])+"</p></div>";}).join("");
-  $("#roles").innerHTML=D.roles.map(function(r,i){
-    return '<div class="role"><h5>'+esc(r["角色"])+'</h5><div class="who"><input type="text" id="role-'+i+
-      '" placeholder="填入姓名" style="font-family:var(--f)"></div><p>'+esc(r["職責"])+"</p></div>";}).join("");
+  renderRoster();
   $("#srclv-rows").innerHTML=D.srcLevels.map(function(r){
     return "<tr><td class=\"mono\">"+esc(r["層級"])+"</td><td>"+esc(r["名稱"])+"</td><td>"+esc(r["例子"])+
       "</td><td>"+esc(r["可不可以當唯一依據"])+"</td></tr>";}).join("");
@@ -497,6 +511,52 @@ function renderContrast(){
     return "<tr><td>"+MD.inline(r[0])+"</td><td>"+MD.inline(r[1])+"</td><td>"+MD.inline(r[2])+
       "</td><td>"+MD.inline(r[3])+"</td></tr>";}).join("");
 }
+
+/* ═══ 組員名單（自由填寫）═══
+   分工是全組共用的一份，同時編輯會互相覆蓋，所以畫面上明講「一個人填就好」。
+   course.md 的「六人角色」只當成建議清單，塞進 datalist 供選，不強制。 */
+var roster=[], rosterDirty=false;
+
+function readRoster(){
+  return $$("#roster .rmrow").map(function(row){
+    return {name:row.querySelector(".rmname").value.trim(),
+            job: row.querySelector(".rmjob").value.trim()};
+  }).filter(function(x){return x.name||x.job;});
+}
+function setRoster(list){
+  roster=Array.isArray(list)?list.slice():[];
+  if(!roster.length)roster=[{name:"",job:""},{name:"",job:""},{name:"",job:""}];
+  paintRoster();
+}
+function paintRoster(){
+  $("#roster").innerHTML='<div class="tscroll"><table><thead><tr>'+
+    '<th style="width:38%">姓名</th><th>負責什麼</th><th style="width:1%"></th>'+
+    "</tr></thead><tbody>"+roster.map(function(m,i){
+      return '<tr class="rmrow"><td><input type="text" class="rmname" value="'+esc(m.name||"")+
+        '" placeholder="姓名"></td><td><input type="text" class="rmjob" list="job-suggest" value="'+
+        esc(m.job||"")+'" placeholder="例：標註、問 AI、查證、做教材"></td>'+
+        '<td><button class="act tiny" data-rm="'+i+'" title="移除這一列">✕</button></td></tr>';
+    }).join("")+"</tbody></table></div>";
+  $$("[data-rm]").forEach(function(b){b.addEventListener("click",function(){
+    roster=readRoster(); roster.splice(Number(b.dataset.rm),1);
+    if(!roster.length)roster=[{name:"",job:""}];
+    rosterDirty=true; paintRoster();
+  });});
+  $$("#roster input").forEach(function(el){
+    el.addEventListener("input",function(){rosterDirty=true;});
+  });
+  $("#roster-hint").textContent=roster.length+" 位";
+}
+function renderRoster(){
+  /* 建議清單：course.md 的六人角色 */
+  $("#job-suggest").innerHTML=(D.roles||[]).map(function(r){
+    return '<option value="'+esc(r["角色"])+'">'+esc(r["職責"]||"")+"</option>";}).join("");
+  setRoster(null);
+}
+$("#btn-add-member").addEventListener("click",function(){
+  roster=readRoster(); roster.push({name:"",job:""}); rosterDirty=true; paintRoster();
+  var ins=$$("#roster .rmname"); if(ins.length)ins[ins.length-1].focus();
+});
 
 /* ═══ 可能出現的偏誤（標註前的參考頁）═══ */
 function renderExamples(){
@@ -847,7 +907,7 @@ function metaFromForm(){
   var o={};
   META_FIELDS.forEach(function(p){o[p[1]]=$(p[0]).value;});
   var t=pickedRule("#t-rule"); o.tRule=t?t.rid:""; o.tRuleTag=t?t.tag:"";
-  D.roles.forEach(function(r,i){var el=$("#role-"+i);if(el)o["role"+i]=el.value;});
+  o.roster=readRoster();
   return o;
 }
 /* 同一組有好幾個人同時開著頁面時，輪詢回來的資料不能蓋掉
@@ -864,7 +924,7 @@ function setIfClean(sel,val){
 function metaToForm(){
   var m=HPLStore.meta()||{};
   META_FIELDS.forEach(function(p){setIfClean(p[0],m[p[1]]);});
-  D.roles.forEach(function(r,i){setIfClean("#role-"+i,m["role"+i]);});
+  if(!rosterDirty)setRoster(m.roster);
   renderCalRate();
 }
 function renderCalRate(){
@@ -874,7 +934,7 @@ function renderCalRate(){
 ["#cal-agree","#cal-total"].forEach(function(s){$(s).addEventListener("input",renderCalRate);});
 ["#btn-save-roles","#btn-save-cal","#btn-save-target","#btn-save-tt"].forEach(function(s){
   $(s).addEventListener("click",function(){
-    HPLStore.setMeta(metaFromForm()).then(function(){clearDirty();toast("已儲存");});});});
+    HPLStore.setMeta(metaFromForm()).then(function(){clearDirty();rosterDirty=false;toast("已儲存");});});});
 document.addEventListener("input",function(e){markDirty(e.target);},true);
 
 /* ═══ 匯出 ═══ */
