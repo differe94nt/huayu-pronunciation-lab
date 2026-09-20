@@ -11,8 +11,8 @@
 <header class="mast"><div class="wrap">
   <div class="kicker">NTU · AI 與人文 · 華語語音教學單元</div>
   <h1 class="t">聽問查教工作台</h1>
-  <p class="sub">四個步驟：聽出來、問清楚、查證據、教得準。每一筆判斷都要能回到音檔的某一秒。</p>
-  <div class="principle">口音不等於錯誤——先分 A／B／C，再決定教什麼</div>
+  <p class="sub">四個步驟：聽出來、問清楚、查證據、教得準。每一筆判斷都要能回到實際表現的某一瞬。</p>
+  <div class="principle">口音不等於錯誤：先分 A／B／C，再決定教什麼</div>
   <nav class="rail" role="tablist">
     <button role="tab" id="tab-o" aria-controls="p-o" aria-selected="true">總覽與分工</button>
     <button role="tab" id="tab-ex" aria-controls="p-ex" aria-selected="false">觀察提示</button>
@@ -43,23 +43,23 @@
 
 <!-- ═══ 總覽 ═══ -->
 <section role="tabpanel" id="p-o" aria-labelledby="tab-o" class="on">
-  <p class="lede">先讀這一頁再開始。四個步驟、三個分類、六個角色——三件事講定了，後面才不會各做各的。</p>
-  <div class="block"><h2><span class="tag">流程</span>四個步驟</h2><div class="steps" id="steps"></div>
+  <p class="lede">四步驟與三分類</p>
+  <div class="block"><h2><span class="tag">流程</span>四步驟</h2><div class="steps" id="steps"></div>
     <p class="muted mini" id="dot-legend" style="margin-top:12px"></p></div>
-  <div class="block"><h2><span class="tag">判準</span>三分類：什麼才值得教</h2>
-    <p>教學目標只能從 A、B 中選；報告必須明確列出判為 C 的項目。</p>
+  <div class="block"><h2><span class="tag">判準</span>三分類</h2>
+    <p>A、B才是需要達成的教學目標；C不一定是現階段的協助重心。</p>
     <div class="triage" id="triage"></div></div>
   <div class="block"><h2><span class="tag">分工</span>組員與分工</h2>
-    <p>姓名和分工都可以自己打。分工欄點一下會跳出建議，也可以完全不照建議寫。</p>
+    <p>姓名和分工都可以自己打：分工欄點一下會跳出建議，也可以完全不照建議寫。</p>
 
     <div class="note warn" style="margin-bottom:14px">
       <strong>這一區請「一個人」填就好。</strong>
       分工、校準結果、教學目標、反思這幾塊是全組共用一份，
       <strong>兩個人同時儲存，後存的會蓋掉先存的</strong>。建議由統整的人負責這幾個儲存按鈕。
       <br><br>
-      <strong>其他人不會閒著</strong>——新增觀察、AI 協作紀錄、查證紀錄這三種是
+      <strong>其他人可以同時</strong>：新增觀察（聽）、AI 協作紀錄（問）、查證紀錄（查）這三種是
       <strong>各自獨立的記錄，可以同時做、不會互相覆蓋</strong>。
-      所以其他人請直接去標註、去跟 AI 對話並記錄，不用等這一區填完。
+      所以其他人請直接去標註、去跟 AI 對話並記錄，不用等這一區填完，但也可以先都指派一個人負責。
     </div>
 
     <div id="roster"></div>
@@ -73,7 +73,7 @@
 
 <!-- ═══ 可能出現的偏誤 ═══ -->
 <section role="tabpanel" id="p-ex" aria-labelledby="tab-ex">
-  <p class="lede">標註之前先看這一頁，知道「可以往哪裡聽」。
+  <p class="lede">標註之前先看這一頁，知道「可以注意聽什麼」。
     這裡列的是<strong>別人根據音系對比推測出來的可能情形，不是答案</strong>——
     你們的語料裡可能有、也可能沒有，沒有本身就是發現。</p>
 
@@ -111,11 +111,11 @@
   <p class="lede">標註的唯一要求：別人拿到你的記錄，能回到那一秒確認你聽到的東西。</p>
 
   <div class="block"><h2><span class="tag">語料</span>本組錄音</h2>
-    <p>播放時按「抓時間碼」會把秒數直接填進下面的表單。</p>
+    <p>播放時記得記下秒數，填進下面的表單。</p>
     <div class="players" id="players"></div></div>
 
   <div class="block"><h2><span class="tag">校準</span>步驟〇：聽力校準</h2>
-    <p>六個人先聽同一段 60 秒、各自獨立標、再比對。不做這一步，後面找到的「規律」可能只是某個人的聽感偏好。</p>
+    <p>六個人先聽同一小段、各自獨立標、再比對。如果不做這一步，後面找到的「規律」可能只是某個人的聽感偏好。</p>
     <div class="panel"><div class="panel-bd">
       <div class="formgrid g2">
         <div><label class="fld" for="cal-clip">校準用片段</label><input type="text" id="cal-clip" class="mono" placeholder="S1 00:00–01:00"></div>
@@ -153,7 +153,7 @@
           例如你聽的那 30 秒裡「二聲」共出現 12 次，其中 7 次上升不足 → 分母填 12，這一筆記 1 次。
           <br><strong>留空也算得出東西</strong>，只是指標不一樣，實證比對會自動退而求其次：
           <br>① 有填分母 → <strong>出現率</strong>（出現次數 ÷ 可出現次數）。最有力，可以跟文獻比。
-          <br>② 沒填分母 → <strong>佔比</strong>（這個現象佔你們全部標註的幾成）。看得出誰最常被標到，但<strong>不是出現率</strong>——分母是你們標了多少，不是這個音有多少次機會。
+          <br>② 沒填分母 → <strong>佔比</strong>（這個現象佔你們全部標註的幾成）。看得出誰最常被標到，但<strong>不是出現率</strong>：分母是你們標了多少，不是這個音有多少次機會。
           <br>③ 標註很少時 → <strong>說話人覆蓋率</strong>（幾位說話人出現過）。
         </div>
         <div class="rowbtns" style="margin-top:12px">
@@ -164,15 +164,15 @@
     </div>
     <div class="reclist" id="reclist" style="margin-top:16px"></div></div>
 
-  <div class="block"><h2><span class="tag">歸納</span>重現矩陣</h2>
+  <div class="block"><h2><span class="tag">歸納</span>分析矩陣</h2>
     <div class="note" style="margin-bottom:14px">
-      <strong>R1、R2 是什麼？</strong>是「成立的規律」的編號，由這張表自動給。<br>
+      <strong>R1、R2 是什麼？</strong>是「成立的規律」的編號，由這張表自動歸納。<br>
       你每標一筆，同樣的「面向＋標籤」就會累積到同一列。當某一列<strong id="mtx-rule-cond">達到門檻</strong>時，
       它就從「個別觀察」升格成<strong>規律</strong>，拿到 R1、R2… 的編號。<br><br>
-      <strong>為什麼重要：</strong>後面三步都只認編號——
+      <strong>為什麼重要：</strong>後面三步都只認編號：
       步驟二的提示詞、步驟三的查證、步驟四的教學目標，選單裡只會出現拿到編號的那幾列。
       一條都沒成立的話，那三個選單會是空的。<br>
-      <span class="muted">沒拿到編號不代表你標錯，只代表它目前只出現在一位說話人身上，還不能說是「規律」——
+      <span class="muted">沒拿到編號不代表你標錯，只代表它目前只出現在一位說話人身上，還不能說是「規律」：
       這正是這個單元要練的判斷。</span>
     </div>
     <p id="mtx-sub"></p>
@@ -234,11 +234,11 @@
     <p>每條規律至少一項 L0、L1 或 L2。查無資料要寫出來，不算失分。</p>
     <div class="note" style="margin-bottom:14px">
       <strong>時間不夠查文獻時，用 L0 就好。</strong>
-      L0 是「我們自己在音檔裡聽到的」——只要寫得出音檔編號與時間碼，
+      L0 是「分析者在音檔裡聽到的」：只要寫得出音檔編號與時間碼，
       別人就能回去驗證，那就是證據。<br>
-      但要記得它撐得起什麼、撐不起什麼：<br>
+      但要記得它支持得了什麼、支持不了什麼：<br>
       ✅ 可以說「<strong>我們這三位說話人身上出現了這個現象</strong>」<br>
-      ✗ 不能說「<strong>法語母語者都會這樣</strong>」——那要 L1 或 L2 才撐得住。<br>
+      ✗ 不能說「<strong>法語母語者都會這樣</strong>」：那要 L1 或 L2 才撐得住。<br>
       <span class="muted">L3（教學網站、部落格、AI 直接生成的整理）永遠只能當線索，不能當依據。
       AI 講的東西如果你查不到原始出處，它就是 L3。</span>
     </div>
@@ -268,7 +268,7 @@
 
 <!-- ═══ 四 教 ═══ -->
 <section role="tabpanel" id="p-4" aria-labelledby="tab-4">
-  <p class="lede">教學目標必須回指某一條規律編號。分析與教學之間要有形式上的連結，不然會各做各的。</p>
+  <p class="lede">教學目標必須回指某一條規律編號。分析與教學之間要有形式上的連結，不是各做各的。</p>
   <div class="block"><h2><span class="tag">選定</span>先選一條規律</h2>
     <p>教哪一個？先把條件設定好，下一個區塊會依照這裡的設定產生跟 AI 討論用的提示詞。</p>
     <div class="panel"><div class="panel-bd">
@@ -321,8 +321,8 @@
 
 <!-- ═══ 實證比對 ═══ -->
 <section role="tabpanel" id="p-c" aria-labelledby="tab-c">
-  <p class="lede">把你們的標註，跟糾音工作台對這個母語做的<strong>預測</strong>放在一起看。
-    預測落空不是你們標錯了——那是對比分析假說已知的失敗模式，本身就是可以寫進報告的發現。</p>
+  <p class="lede">把你們的標註，跟觀察提示對這個母語做的<strong>預測</strong>放在一起看。
+    預測落空不是你們標錯了：那是對比分析假說無法被驗證，本身就是可以進一步討論的發現。</p>
 
   <div class="block"><h2><span class="tag">範圍</span>要比對誰的資料</h2>
     <div class="panel"><div class="panel-bd">
@@ -348,7 +348,7 @@
 
 <!-- ═══ 繳交 ═══ -->
 <section role="tabpanel" id="p-x" aria-labelledby="tab-x">
-  <p class="lede">交出去之前，先看這一頁的紅字還剩幾條。</p>
+  <p class="lede">交出去之前，確認一下是不是都完成了：</p>
   <div class="block"><h2><span class="tag">檢核</span>繳交前檢核</h2><div id="submit-check"></div></div>
   <div class="block"><h2><span class="tag">匯出</span>組別資料匯出</h2>
     <div class="rowbtns" style="margin-bottom:12px">
@@ -356,7 +356,7 @@
       <button class="act" id="btn-copy-export">複製</button>
       <button class="act" id="btn-dl-export">下載 .md</button>
       <button class="act" id="btn-clear">清除本組資料</button></div>
-    <div class="exportbox" id="export-out">按「產生匯出內容」把目前這一組的校準結果、觀察記錄、重現矩陣、AI 協作歷程、查證紀錄、教學目標與方案骨架整理成一份文字稿。</div></div>
+    <div class="exportbox" id="export-out">按「產生匯出內容」把目前這一組的校準結果、觀察記錄、分析矩陣、AI 協作歷程、查證紀錄、教學目標與方案骨架整理成一份文字稿。</div></div>
 </section>
 
 </main>
@@ -644,7 +644,7 @@ $("#btn-demo-rec").addEventListener("click",function(){
   if(CFG.requireDenominator)$("#r-denom").value="12";
 });
 
-/* ═══ 重現矩陣 ═══ */
+/* ═══ 分析矩陣 ═══ */
 function matrixRows(){
   var g=G(), by={};
   recs().forEach(function(r){
@@ -1047,7 +1047,7 @@ function buildExport(){
     L.push("| "+[r.spk,r.tc,r.word,r.lv,r.tag,(r.denom||"—"),r.tri,(r.by||"—"),String(r.desc||"").replace(/\|/g,"／")].join(" | ")+" |");
   });
   L.push("");
-  L.push("## 重現矩陣");
+  L.push("## 分析矩陣");
   L.push("");
   L.push("| 編號 | 現象 | 面向 | S1 | S2 | S3 | 合計 | 分母 | 出現率 | 判斷 |");
   L.push("|---|---|---|---|---|---|---|---|---|---|");
