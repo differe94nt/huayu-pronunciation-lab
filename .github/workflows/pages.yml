@@ -1,0 +1,36 @@
+name: Publish v2
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Test audio access and publishing
+        run: |
+          node --test v2/tests/audio.test.cjs
+          python3 -m unittest discover -s v2/tests -p '*_test.py'
+      - uses: actions/configure-pages@v5
+      - name: Prepare public website
+        run: |
+          mkdir -p _site/v2
+          cp index.html _site/
+          cp v2/index.html v2/workbench.html v2/live.html v2/config.js _site/v2/
+          cp -R v2/assets v2/content _site/v2/
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - uses: actions/deploy-pages@v4
+        id: deployment

@@ -1,0 +1,14 @@
+audio/
+*.m4a
+*.mp3
+*.wav
+*.MP3
+*.WAV
+**/audio-manifest.json
+**/*_全班標註彙整.md
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
+_site/
+github-v2/

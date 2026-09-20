@@ -1,0 +1,10 @@
+{
+  "_說明": "僅供本機無密碼模式。組名與完整檔名必須符合 content/groups.md。",
+  "byGroup": {
+    "第一組": {
+      "American1.m4a": "REPLACE_WITH_FILE_ID",
+      "American2.m4a": "REPLACE_WITH_FILE_ID",
+      "American3.m4a": "REPLACE_WITH_FILE_ID"
+    }
+  }
+}

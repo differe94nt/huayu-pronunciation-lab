@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>聽問查教工作台</title>
+<link rel="stylesheet" href="assets/base.css">
+</head>
+<body>
+
+<header class="mast"><div class="wrap">
+  <div class="kicker">NTU · AI 與人文 · 華語語音教學單元</div>
+  <h1 class="t">聽問查教工作台</h1>
+  <p class="sub">四個步驟：聽出來、問清楚、查證據、教得準。每一筆判斷都要能回到音檔的某一秒。</p>
+  <div class="principle">口音不等於錯誤——先分 A／B／C，再決定教什麼</div>
+  <nav class="rail" role="tablist">
+    <button role="tab" id="tab-o" aria-controls="p-o" aria-selected="true">總覽與分工</button>
+    <button role="tab" id="tab-1" aria-controls="p-1" aria-selected="false"><span class="n">一</span>聽<span class="dot" data-dot="1"></span></button>
+    <button role="tab" id="tab-2" aria-controls="p-2" aria-selected="false"><span class="n">二</span>問<span class="dot" data-dot="2"></span></button>
+    <button role="tab" id="tab-3" aria-controls="p-3" aria-selected="false"><span class="n">三</span>查<span class="dot" data-dot="3"></span></button>
+    <button role="tab" id="tab-4" aria-controls="p-4" aria-selected="false"><span class="n">四</span>教<span class="dot" data-dot="4"></span></button>
+    <button role="tab" id="tab-c" aria-controls="p-c" aria-selected="false">實證比對</button>
+    <button role="tab" id="tab-x" aria-controls="p-x" aria-selected="false">繳交與匯出</button>
+    <button role="tab" id="tab-t" aria-controls="p-t" aria-selected="false">教師版</button>
+  </nav>
+</div></header>
+
+<div class="gbar"><div class="wrap">
+  <label class="fld" for="sel-group" style="margin:0">本組</label>
+  <select id="sel-group"></select>
+  <span class="gfiles" id="gfiles"></span>
+  <span class="gnote" id="gnote"></span>
+  <span style="flex:1"></span>
+  <span class="conn" id="conn"><i></i><span id="conn-t">載入中</span></span>
+</div></div>
+
+<main class="wrap">
+
+<!-- ═══ 總覽 ═══ -->
+<section role="tabpanel" id="p-o" aria-labelledby="tab-o" class="on">
+  <p class="lede">先讀這一頁再開始。四個步驟、三個分類、六個角色——三件事講定了，後面才不會各做各的。</p>
+  <div class="block"><h2><span class="tag">流程</span>四個步驟</h2><div class="steps" id="steps"></div></div>
+  <div class="block"><h2><span class="tag">判準</span>三分類：什麼才值得教</h2>
+    <p>教學目標只能從 A、B 中選；報告必須明確列出判為 C 的項目。</p>
+    <div class="triage" id="triage"></div></div>
+  <div class="block"><h2><span class="tag">分工</span>六人角色</h2>
+    <p>按角色分，不要按步驟接力。硬規定：六個人都要聽完三份錄音。</p>
+    <div class="roles" id="roles"></div>
+    <div class="rowbtns" style="margin-top:12px"><button class="act" id="btn-save-roles">儲存分工</button></div></div>
+</section>
+
+<!-- ═══ 一 聽 ═══ -->
+<section role="tabpanel" id="p-1" aria-labelledby="tab-1">
+  <p class="lede">標註的唯一要求：別人拿到你的記錄，能回到那一秒確認你聽到的東西。</p>
+
+  <div class="block"><h2><span class="tag">語料</span>本組錄音</h2>
+    <p>播放時按「抓時間碼」會把秒數直接填進下面的表單。</p>
+    <div class="players" id="players"></div></div>
+
+  <div class="block"><h2><span class="tag">校準</span>步驟〇：聽力校準</h2>
+    <p>六個人先聽同一段 60 秒、各自獨立標、再比對。不做這一步，後面找到的「規律」可能只是某個人的聽感偏好。</p>
+    <div class="panel"><div class="panel-bd">
+      <div class="formgrid g2">
+        <div><label class="fld" for="cal-clip">校準用片段</label><input type="text" id="cal-clip" class="mono" placeholder="S1 00:00–01:00"></div>
+        <div><label class="fld" for="cal-n">參與人數</label><input type="text" id="cal-n" class="mono" placeholder="6"></div>
+        <div><label class="fld" for="cal-agree">多數人標到的項目數</label><input type="text" id="cal-agree" class="mono" placeholder="4"></div>
+        <div><label class="fld" for="cal-total">全組標出的不同項目數</label><input type="text" id="cal-total" class="mono" placeholder="11"></div>
+      </div>
+      <div style="margin-top:12px"><label class="fld" for="cal-note">不一致的地方怎麼決議的</label>
+        <textarea id="cal-note" rows="2" placeholder="例：三個人把「房」標成聲調問題，兩個人標成韻母問題。討論後認為是上升幅度不足，歸為聲調。"></textarea></div>
+      <div class="rowbtns" style="margin-top:12px"><button class="act" id="btn-save-cal">儲存校準結果</button>
+        <span class="muted" id="cal-rate"></span></div>
+    </div></div></div>
+
+  <div class="block"><h2><span class="tag">標註</span>個別語音觀察與時間碼</h2>
+    <div class="panel">
+      <div class="panel-hd"><h3>新增一筆觀察</h3><span class="muted" id="rec-count"></span></div>
+      <div class="panel-bd">
+        <div class="formgrid g3">
+          <div><label class="fld" for="r-spk">音檔</label><select class="inp" id="r-spk"></select></div>
+          <div><label class="fld" for="r-tc">時間碼</label><input type="text" id="r-tc" class="mono" placeholder="00:37"></div>
+          <div><label class="fld" for="r-word">目標字詞</label><input type="text" id="r-word" placeholder="房間 fángjiān"></div>
+          <div><label class="fld" for="r-lv">面向</label><select class="inp" id="r-lv"></select></div>
+          <div><label class="fld" for="r-tagsel">現象標籤</label><select class="inp" id="r-tagsel"></select></div>
+          <div><label class="fld" for="r-tri">初步判斷</label><select class="inp" id="r-tri">
+            <option value="A">A 造成音位混淆</option><option value="B">B 影響理解</option>
+            <option value="C">C 僅口音特徵</option><option value="?" selected>待判定</option></select></div>
+          <div id="denom-wrap"><label class="fld" for="r-denom">可出現次數（分母）</label>
+            <input type="number" id="r-denom" class="mono" min="1" step="1" placeholder="12"></div>
+          <div><label class="fld" for="r-by">標註者</label><input type="text" id="r-by" placeholder="標註員 A"></div>
+        </div>
+        <div style="margin-top:12px"><label class="fld" for="r-desc">聽到什麼（寫你聽到的，不要寫結論）</label>
+          <input type="text" id="r-desc" placeholder="「房」第二聲上升幅度較小，起點與終點差距約一度"></div>
+        <div class="note warn mini" id="denom-hint" style="margin-top:10px">
+          <strong>分母是什麼：</strong>這一段語料裡，這個音（調、規則）本來有幾次機會出現。
+          例如 S1 這一分鐘裡「二聲」共出現 12 次，其中 7 次上升不足 → 分母填 12，這筆觀察記 1 次。
+          沒有分母，實證比對只能算「幾位說話人出現過」，算不出出現率。
+        </div>
+        <div class="rowbtns" style="margin-top:12px">
+          <button class="act primary" id="btn-add-rec">新增觀察</button>
+          <button class="act" id="btn-demo-rec">填入範例</button>
+        </div>
+      </div>
+    </div>
+    <div class="reclist" id="reclist" style="margin-top:16px"></div></div>
+
+  <div class="block"><h2><span class="tag">歸納</span>重現矩陣</h2>
+    <p id="mtx-sub"></p>
+    <div class="tscroll"><table class="mtx">
+      <thead><tr><th>現象</th><th>面向</th><th class="mono">S1</th><th class="mono">S2</th><th class="mono">S3</th>
+        <th class="mono">合計</th><th class="mono">分母</th><th class="mono">出現率</th><th>判斷</th><th>編號</th></tr></thead>
+      <tbody id="mtx-rows"></tbody></table></div>
+    <div class="note warn" style="margin-top:14px" id="mtx-warn"></div></div>
+</section>
+
+<!-- ═══ 二 問 ═══ -->
+<section role="tabpanel" id="p-2" aria-labelledby="tab-2">
+  <p class="lede">順序很重要：<strong>先自己寫假設，再問 AI，最後比對差異</strong>。差異本身就是這一步最好的材料。</p>
+  <div class="block"><h2><span class="tag">提示詞</span>拿去問 AI 的話</h2>
+    <div class="panel">
+      <div class="panel-hd"><h3>成因探索提示詞</h3>
+        <div class="rowbtns"><select class="inp" id="p2-rule" style="width:auto;min-width:200px"></select>
+        <button class="act tiny" id="btn-copy-p2">複製</button></div></div>
+      <div class="panel-bd"><pre class="plan" id="p2-prompt" style="margin:0;font-family:var(--f)"></pre></div>
+    </div></div>
+  <div class="block"><h2><span class="tag">紀錄</span>AI 協作歷程</h2>
+    <p>3–5 則。四個欄位齊備才算完整。不要美化提問。</p>
+    <div class="panel">
+      <div class="panel-hd"><h3>新增一則協作紀錄</h3><span class="muted" id="ai-count"></span></div>
+      <div class="panel-bd">
+        <div><label class="fld" for="a-hypo">① 我們自己先寫的假設（不能跳過）</label>
+          <textarea id="a-hypo" rows="2" placeholder="我們認為「房」的二聲上升不足，是因為英語的升調通常出現在句末，不會落在單字上。"></textarea></div>
+        <div style="margin-top:10px"><label class="fld" for="a-q">② 我們問了什麼（原文照貼）</label>
+          <textarea id="a-q" rows="2" placeholder="把原始提問貼上來，不要改寫得比較好看"></textarea></div>
+        <div style="margin-top:10px"><label class="fld" for="a-r">③ AI 回答的重點</label>
+          <textarea id="a-r" rows="2" placeholder="摘要 AI 的回答重點，一併寫出它舉了哪些例子"></textarea></div>
+        <div style="margin-top:10px"><label class="fld" for="a-h">④ 跟我們的假設差在哪裡</label>
+          <textarea id="a-h" rows="2" placeholder="它讓我們注意到什麼？我們因此回去重聽了哪一段？"></textarea></div>
+        <div style="margin-top:10px"><label class="fld" for="a-u">⑤ 我們怎麼處理它的回答</label>
+          <textarea id="a-u" rows="2" placeholder="採用了哪一部分、改寫了哪一部分、刪掉了哪一部分，為什麼"></textarea></div>
+        <div class="formgrid g2" style="margin-top:10px">
+          <div><label class="fld" for="a-rule">對應規律編號</label><select class="inp" id="a-rule"></select></div>
+          <div><label class="fld" for="a-verdict">我們對 AI 這次表現的判斷</label><select class="inp" id="a-verdict">
+            <option>可用，但需查證</option><option>部分正確，已修正</option>
+            <option>不正確，已捨棄</option><option>提供了我們沒想到的方向</option></select></div>
+        </div>
+        <div class="rowbtns" style="margin-top:12px"><button class="act primary" id="btn-add-ai">新增紀錄</button>
+          <button class="act" id="btn-ask-ai" hidden>在這裡直接問 Claude</button>
+          <button class="act" id="btn-ask-stop" hidden>停止</button></div>
+        <div id="ai-out" style="margin-top:12px"></div>
+      </div></div>
+    <div class="reclist" id="ailist" style="margin-top:16px"></div></div>
+</section>
+
+<!-- ═══ 三 查 ═══ -->
+<section role="tabpanel" id="p-3" aria-labelledby="tab-3">
+  <p class="lede">對比分析只能告訴你「哪裡值得先看」，不能告訴你「一定會錯」。查證就是去確認哪一種。</p>
+  <div class="block"><h2><span class="tag">對照</span>母語 × 華語音系比較</h2>
+    <p id="ct-sub"></p>
+    <div class="note good" style="margin-bottom:14px" id="ct-plus"></div>
+    <div class="tscroll"><table>
+      <thead><tr><th>面向</th><th>華語項目</th><th>母語情況</th><th>預期偏誤</th></tr></thead>
+      <tbody id="ct-rows"></tbody></table></div></div>
+  <div class="block"><h2><span class="tag">層級</span>可靠資料的三個層級</h2>
+    <p>每條規律至少一項 L1 或 L2。查無資料要寫出來，不算失分。</p>
+    <div class="tscroll"><table>
+      <thead><tr><th>層級</th><th>名稱</th><th>例子</th><th>可不可以當唯一依據</th></tr></thead>
+      <tbody id="srclv-rows"></tbody></table></div></div>
+  <div class="block"><h2><span class="tag">驗證</span>查證紀錄</h2>
+    <div class="panel">
+      <div class="panel-hd"><h3>新增一筆查證</h3><span class="muted" id="src-count"></span></div>
+      <div class="panel-bd">
+        <div class="formgrid g3">
+          <div><label class="fld" for="s-rule">對應規律</label><select class="inp" id="s-rule"></select></div>
+          <div><label class="fld" for="s-level">來源層級</label><select class="inp" id="s-level">
+            <option>L1 一手研究</option><option>L2 標準參考</option><option>L3 教學經驗</option></select></div>
+          <div><label class="fld" for="s-result">查證結果</label><select class="inp" id="s-result">
+            <option>支持</option><option>部分支持</option><option>不支持</option><option>查無資料</option></select></div>
+        </div>
+        <div style="margin-top:10px"><label class="fld" for="s-cite">書目資訊</label>
+          <input type="text" id="s-cite" placeholder="照抄書目資訊，不要憑印象寫"></div>
+        <div style="margin-top:10px"><label class="fld" for="s-say">它到底講了什麼</label>
+          <input type="text" id="s-say" placeholder="不要寫「研究顯示……」，寫出它到底講了什麼、對象是誰"></div>
+        <div class="rowbtns" style="margin-top:12px"><button class="act primary" id="btn-add-src">新增查證</button></div>
+      </div></div>
+    <div class="reclist" id="srclist" style="margin-top:16px"></div></div>
+</section>
+
+<!-- ═══ 四 教 ═══ -->
+<section role="tabpanel" id="p-4" aria-labelledby="tab-4">
+  <p class="lede">教學目標必須回指某一條規律編號。分析與教學之間要有形式上的連結，不然會各做各的。</p>
+  <div class="block"><h2><span class="tag">選定</span>主要教學目標</h2>
+    <div class="panel"><div class="panel-bd">
+      <div class="formgrid g3">
+        <div><label class="fld" for="t-rule">從成立的規律中選一條</label><select class="inp" id="t-rule"></select></div>
+        <div><label class="fld" for="t-level">學習者程度</label><select class="inp" id="t-level">
+          <option>初級</option><option selected>中級</option><option>中高級</option></select></div>
+        <div><label class="fld" for="t-time">教學時間</label><select class="inp" id="t-time">
+          <option>單次 20 分鐘</option><option selected>單次 50 分鐘</option><option>兩週分散練習</option></select></div>
+      </div>
+      <div style="margin-top:12px"><label class="fld" for="t-why">為什麼選它、為什麼不選其他</label>
+        <textarea id="t-why" rows="3" placeholder="請依 出現情形／是否造成音位混淆／短期內能不能改變／這個程度該不該處理 四點論證，並明確寫出「我們不選 Rx，因為……」"></textarea></div>
+      <div class="rowbtns" style="margin-top:12px"><button class="act" id="btn-save-target">儲存教學目標</button></div>
+    </div></div></div>
+  <div class="block"><h2><span class="tag">關卡</span>一致性檢核</h2>
+    <p>教學目標與分析發現對不對得起來。</p><div id="align"></div></div>
+  <div class="block"><h2><span class="tag">方案</span>糾音方案骨架</h2>
+    <div class="rowbtns" style="margin-bottom:12px">
+      <button class="act primary" id="btn-build">產生方案骨架</button>
+      <button class="act" id="btn-copy-plan">複製</button></div>
+    <div class="panel"><div class="panel-bd"><div class="plan" id="plan-out"></div></div></div></div>
+  <div class="block"><h2><span class="tag">驗證</span>五分鐘試教</h2>
+    <p>組間互換，結束只問一個問題：「哪裡你還是不知道要怎麼做？」</p>
+    <div class="panel"><div class="panel-bd">
+      <div><label class="fld" for="tt-who">試教對象組別</label><input type="text" id="tt-who" placeholder="第 X 組"></div>
+      <div style="margin-top:10px"><label class="fld" for="tt-fb">對方說了什麼（原話照抄）</label>
+        <textarea id="tt-fb" rows="2" placeholder="照抄對方的原話，不要美化"></textarea></div>
+      <div style="margin-top:10px"><label class="fld" for="tt-fix">我們因此改了什麼</label>
+        <textarea id="tt-fix" rows="2"></textarea></div>
+      <div class="rowbtns" style="margin-top:12px"><button class="act" id="btn-save-tt">儲存試教回饋</button></div>
+    </div></div></div>
+</section>
+
+<!-- ═══ 實證比對 ═══ -->
+<section role="tabpanel" id="p-c" aria-labelledby="tab-c">
+  <p class="lede">把你們的標註，跟糾音工作台對這個母語做的<strong>預測</strong>放在一起看。
+    預測落空不是你們標錯了——那是對比分析假說已知的失敗模式，本身就是可以寫進報告的發現。</p>
+
+  <div class="block"><h2><span class="tag">範圍</span>要比對誰的資料</h2>
+    <div class="panel"><div class="panel-bd">
+      <div class="formgrid g3">
+        <div><label class="fld" for="cmp-scope">資料範圍</label><select class="inp" id="cmp-scope">
+          <option value="group">只看本組</option><option value="class" selected>全班同母語的組別</option></select></div>
+        <div><label class="fld" for="cmp-l1">母語</label><select class="inp" id="cmp-l1"></select></div>
+        <div style="display:flex;align-items:end"><button class="act" id="btn-cmp-refresh">重新抓資料</button></div>
+      </div>
+      <p class="muted mini" id="cmp-meta"></p>
+    </div></div></div>
+
+  <div class="block"><h2><span class="tag">比對</span>預測 vs 觀察</h2>
+    <div class="panel"><div class="panel-bd" id="cmp-out">
+      <p class="muted">按上面的「重新抓資料」開始。</p></div></div>
+    <div class="note" style="margin-top:14px" id="cmp-agree"></div></div>
+
+  <div class="block"><h2><span class="tag">判讀</span>四種結果怎麼看</h2>
+    <div class="tscroll"><table>
+      <thead><tr><th>圖上看到</th><th>意思</th><th>該怎麼辦</th></tr></thead>
+      <tbody id="cmp-guide"></tbody></table></div></div>
+</section>
+
+<!-- ═══ 繳交 ═══ -->
+<section role="tabpanel" id="p-x" aria-labelledby="tab-x">
+  <p class="lede">交出去之前，先看這一頁的紅字還剩幾條。</p>
+  <div class="block"><h2><span class="tag">檢核</span>繳交前檢核</h2><div id="submit-check"></div></div>
+  <div class="block"><h2><span class="tag">匯出</span>組別資料匯出</h2>
+    <div class="rowbtns" style="margin-bottom:12px">
+      <button class="act primary" id="btn-export">產生匯出內容</button>
+      <button class="act" id="btn-copy-export">複製</button>
+      <button class="act" id="btn-dl-export">下載 .md</button>
+      <button class="act" id="btn-clear">清除本組資料</button></div>
+    <div class="exportbox" id="export-out">按「產生匯出內容」把目前這一組的校準結果、觀察記錄、重現矩陣、AI 協作歷程、查證紀錄、教學目標與方案骨架整理成一份文字稿。</div></div>
+</section>
+
+<!-- ═══ 教師版 ═══ -->
+<section role="tabpanel" id="p-t" aria-labelledby="tab-t">
+  <p class="lede">這一頁給老師。學生也看得到，沒關係。</p>
+  <div class="block"><h2><span class="tag">發現</span>語料池裡藏著一個跨組信度研究</h2>
+    <p>多組共用同一位說話人。同一份錄音、不同組別標出來的東西一不一樣，本身就是一個題目。</p>
+    <div class="tscroll"><table><thead><tr><th>說話人</th><th class="mono">時長</th><th>哪幾組拿到</th></tr></thead>
+      <tbody id="shared-rows"></tbody></table></div></div>
+  <div class="block"><h2><span class="tag">建議</span>對課程邏輯的建議</h2><div class="steps" id="advice"></div></div>
+  <div class="block"><h2><span class="tag">評分</span>建議的評分規準</h2>
+    <div class="tscroll"><table><thead><tr><th>項目</th><th class="mono">配分</th><th>說明</th></tr></thead>
+      <tbody id="rubric"></tbody></table></div></div>
+  <div class="block"><h2><span class="tag">看板</span>即時看板</h2>
+    <p>上課時開在投影幕上，全班的進度與觀察會自動更新。</p>
+    <p><a href="live.html" target="_blank" rel="noopener">開啟即時看板 →</a></p></div>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  <p id="foot-note">資料儲存方式會顯示在頁面右上角。請提醒學生：做完一段就按「產生匯出內容」下載 .md 存檔。</p>
+  <p>僅供本課程教學使用。學習者錄音的再散布須另取得當事人同意。</p>
+</div></footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="config.js"></script>
+<script src="assets/md.js"></script>
+<script src="assets/data.js"></script>
+<script src="assets/audio.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/compare.js"></script>
+<script src="assets/viz.js"></script>
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s);},
+    $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+var esc=MD.esc;
+var CFG=window.HPL_CONFIG||{};
+var D=null, gid=null, players=[], sampleFn=null, dlFn=null, abortCtl=null;
+
+var mmss=function(s){return Math.floor(s/60)+":"+String(Math.round(s%60)).padStart(2,"0");};
+var tT; function toast(m){var t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(tT);tT=setTimeout(function(){t.hidden=true;},2400);}
+function copyText(txt,label){
+  var ok=function(){toast((label||"內容")+"已複製");};
+  var fb=function(){var ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";
+    document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok();}catch(e){toast("請手動選取複製");}document.body.removeChild(ta);};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,fb);else fb();
+}
+var G=function(){return D.groups.filter(function(g){return g.id===gid;})[0];};
+
+/* ═══ 分頁 ═══ */
+$$("nav.rail button").forEach(function(b){b.addEventListener("click",function(){
+  $$("nav.rail button").forEach(function(o){o.setAttribute("aria-selected",String(o===b));});
+  $$("section[role=tabpanel]").forEach(function(p){p.classList.toggle("on",p.id===b.getAttribute("aria-controls"));});
+  if(b.id==="tab-c")refreshCompare();
+  window.scrollTo({top:0,behavior:"smooth"});
+});});
+
+/* ═══ 靜態內容 ═══ */
+function renderStatic(){
+  $("#steps").innerHTML=D.steps.map(function(s){
+    return '<div class="stepc"><div class="no">'+esc(s["步驟"])+'</div><div><h4>'+esc(s["標題"])+
+      "</h4><p>"+esc(s["說明"])+"</p></div></div>";}).join("");
+  $("#triage").innerHTML=D.triage.map(function(t){
+    return '<div class="tri '+esc(t["類別"])+'"><h5><span class="chip '+esc(t["類別"])+'">'+esc(t["類別"])+
+      "</span>"+esc(t["名稱"])+"</h5><p>"+esc(t["說明"])+"</p></div>";}).join("");
+  $("#roles").innerHTML=D.roles.map(function(r,i){
+    return '<div class="role"><h5>'+esc(r["角色"])+'</h5><div class="who"><input type="text" id="role-'+i+
+      '" placeholder="填入姓名" style="font-family:var(--f)"></div><p>'+esc(r["職責"])+"</p></div>";}).join("");
+  $("#srclv-rows").innerHTML=D.srcLevels.map(function(r){
+    return "<tr><td class=\"mono\">"+esc(r["層級"])+"</td><td>"+esc(r["名稱"])+"</td><td>"+esc(r["例子"])+
+      "</td><td>"+esc(r["可不可以當唯一依據"])+"</td></tr>";}).join("");
+  $("#advice").innerHTML=D.advice.map(function(a,i){
+    return '<div class="stepc"><div class="no">'+(i+1)+'</div><div><h4>'+esc(a["建議"])+
+      "</h4><p>"+esc(a["說明"])+"</p></div></div>";}).join("");
+  $("#rubric").innerHTML=D.rubricIndex.map(function(r){
+    return "<tr><td><strong>"+esc(r["項目"])+"</strong></td><td class=\"mono\">"+esc(r["配分"])+
+      "</td><td>"+esc(r["說明"])+"</td></tr>";}).join("");
+  $("#cmp-guide").innerHTML=D.readCompare.map(function(r){
+    return "<tr><td><strong>"+esc(r["圖上看到"])+"</strong></td><td>"+esc(r["意思"])+
+      "</td><td>"+esc(r["該怎麼辦"])+"</td></tr>";}).join("");
+  var sm=D.speakerMap;
+  $("#shared-rows").innerHTML=Object.keys(sm).filter(function(k){return sm[k].gs.length>1;})
+    .sort(function(a,b){return sm[b].gs.length-sm[a].gs.length;})
+    .map(function(k){return "<tr><td class=\"mono\">"+esc(k)+"</td><td class=\"mono\">"+mmss(sm[k].dur)+
+      "</td><td>"+esc(sm[k].gs.join("、"))+"</td></tr>";}).join("")
+    ||"<tr><td colspan=\"3\" class=\"muted\">沒有跨組共用的說話人</td></tr>";
+  $("#denom-wrap").hidden=!CFG.requireDenominator;
+  $("#denom-hint").hidden=!CFG.requireDenominator;
+}
+
+/* ═══ 組別列 ═══ */
+function renderGroupBar(){
+  var g=G();
+  $("#sel-group").innerHTML=D.groups.map(function(x){
+    return '<option value="'+x.id+'"'+(x.id===gid?" selected":"")+">"+esc(x.n)+"　"+esc(x.l1)+"</option>";}).join("");
+  $("#gfiles").innerHTML=g.f.map(function(f,i){
+    return '<span class="gfile"><b>S'+(i+1)+"</b>"+esc(f[0])+"<span>"+mmss(f[1])+"</span></span>";}).join("");
+  var sh=g.f.map(function(f,i){
+    return {i:i,others:(D.speakerMap[f[2]].gs||[]).filter(function(n){return n!==g.n;})};
+  }).filter(function(x){return x.others.length;});
+  $("#gnote").textContent=sh.length
+    ? "共用說話人："+sh.map(function(x){return "S"+(x.i+1)+"↔"+x.others.join("、");}).join("　")
+    : "本組三位說話人未與其他組重複";
+  $("#r-spk").innerHTML=g.f.map(function(f,i){
+    return '<option value="S'+(i+1)+'">S'+(i+1)+"　"+esc(f[0])+"</option>";}).join("");
+}
+
+/* ═══ 播放器 ═══ */
+var passBarShown=false;
+function renderPlayers(){
+  var host=$("#players"); host.innerHTML=""; players=[]; passBarShown=false;
+  var g=G();
+  g.f.forEach(function(f,i){
+    players.push(HPLAudio.mount(host,f[2],{
+      label:"S"+(i+1), filename:f[0], group:g.n, seconds:f[1],
+      onGrab:function(t){
+        $("#r-spk").value="S"+(i+1);
+        $("#r-tc").value=mmss(t);
+        $("#r-word").focus();
+        toast("已填入 S"+(i+1)+"（"+mmss(t)+"）");
+      },
+      onLocked:function(){
+        /* 三個播放器共用一個密碼框，只放一次 */
+        if(passBarShown)return;
+        passBarShown=true;
+        var bar=HPLAudio.passwordBar(host,function(){
+          toast("已解鎖，正在載入錄音");
+          renderPlayers();
+        });
+        host.insertBefore(bar,host.firstChild);
+      }
+    }));
+  });
+}
+
+/* ═══ 標籤選單 ═══ */
+function renderLevelSelects(){
+  $("#r-lv").innerHTML=D.levels.map(function(l){return '<option value="'+esc(l.n)+'">'+esc(l.n)+"</option>";}).join("");
+  syncTags();
+}
+function syncTags(){
+  var lv=D.levels.filter(function(l){return l.n===$("#r-lv").value;})[0]||D.levels[0];
+  $("#r-tagsel").innerHTML=lv.tags.map(function(t){
+    return '<option value="'+esc(t.tag)+'">'+esc(t.tag)+"</option>";}).join("");
+}
+$("#r-lv").addEventListener("change",syncTags);
+
+/* ═══ 音韻對照 ═══ */
+function renderContrast(){
+  var g=G(), c=D.contrast[g.l1];
+  $("#ct-sub").textContent=c?(g.l1+" 母語者學華語時，音系上最值得先看的地方。"):"";
+  if(!c){$("#ct-rows").innerHTML='<tr><td colspan="4" class="muted">content/contrast.md 裡沒有「'+esc(g.l1)+'」這一節。</td></tr>';
+    $("#ct-plus").hidden=true;return;}
+  $("#ct-plus").hidden=false;
+  $("#ct-plus").innerHTML="<strong>優勢項：</strong>"+MD.inline(c.plus);
+  $("#ct-rows").innerHTML=c.rows.map(function(r){
+    return "<tr><td>"+MD.inline(r[0])+"</td><td>"+MD.inline(r[1])+"</td><td>"+MD.inline(r[2])+
+      "</td><td>"+MD.inline(r[3])+"</td></tr>";}).join("");
+}
+
+/* ═══ 記錄 ═══ */
+function recs(){return HPLStore.get("records");}
+function renderRecs(){
+  var list=recs();
+  $("#rec-count").textContent=list.length+" 筆";
+  $("#reclist").innerHTML=list.length?list.slice().reverse().map(function(r){
+    return '<div class="rec"><div class="rh"><span class="id mono">'+esc(r.spk)+"　"+esc(r.tc)+
+      (r.by?"　"+esc(r.by):"")+'</span><span class="rowbtns">'+
+      '<span class="chip '+(r.tri==="?"?"n":esc(r.tri))+'">'+esc(r.tri)+"</span>"+
+      '<button class="act tiny" data-del="'+r.id+'">刪除</button></span></div>'+
+      "<dl><dt>字詞</dt><dd>"+esc(r.word)+"</dd>"+
+      "<dt>標籤</dt><dd>"+esc(r.lv)+" · "+esc(r.tag)+(r.denom?"（分母 "+esc(r.denom)+"）":"")+"</dd>"+
+      "<dt>描述</dt><dd>"+esc(r.desc)+"</dd></dl></div>";}).join("")
+    :'<p class="muted">還沒有觀察記錄。</p>';
+  $$("[data-del]").forEach(function(b){b.addEventListener("click",function(){
+    HPLStore.remove("records",b.dataset.del);});});
+  renderMatrix(); updateDots(); renderRuleSelects();
+}
+$("#btn-add-rec").addEventListener("click",function(){
+  var word=$("#r-word").value.trim(), desc=$("#r-desc").value.trim(), tc=$("#r-tc").value.trim();
+  if(!word||!tc){toast("時間碼與目標字詞都要填");return;}
+  var g=G(), tag=$("#r-tagsel").value;
+  HPLStore.add("records",{
+    spk:$("#r-spk").value, spkId:(g.f[Number($("#r-spk").value.slice(1))-1]||[])[2]||"",
+    tc:tc, word:word, lv:$("#r-lv").value, tag:tag, key:D.tagKey[tag]||"",
+    tri:$("#r-tri").value, desc:desc, by:$("#r-by").value.trim(),
+    denom:$("#r-denom").value?Number($("#r-denom").value):null,
+    group:g.n, l1:g.l1
+  });
+  $("#r-word").value="";$("#r-desc").value="";$("#r-tc").value="";$("#r-denom").value="";
+  toast("已新增");
+});
+$("#btn-demo-rec").addEventListener("click",function(){
+  $("#r-tc").value="00:37";$("#r-word").value="房間 fángjiān";
+  $("#r-desc").value="「房」第二聲上升幅度較小，起點與終點差距約一度";
+  if(CFG.requireDenominator)$("#r-denom").value="12";
+});
+
+/* ═══ 重現矩陣 ═══ */
+function matrixRows(){
+  var g=G(), by={};
+  recs().forEach(function(r){
+    var k=r.lv+"｜"+r.tag;
+    var b=by[k]||(by[k]={lv:r.lv,tag:r.tag,s:{},total:0,denom:0,tri:{}});
+    b.s[r.spk]=(b.s[r.spk]||0)+1; b.total++;
+    if(r.denom)b.denom+=Number(r.denom);
+    if(r.tri)b.tri[r.tri]=(b.tri[r.tri]||0)+1;
+  });
+  var th=CFG.ruleThreshold||{speakers:2,total:3};
+  return Object.keys(by).map(function(k){
+    var b=by[k], spkN=Object.keys(b.s).length;
+    b.isRule=spkN>=th.speakers&&b.total>=th.total;
+    b.spkN=spkN;
+    b.rate=b.denom>0?b.total/b.denom:null;
+    var best="?",bn=0;
+    Object.keys(b.tri).forEach(function(t){if(t!=="?"&&b.tri[t]>bn){bn=b.tri[t];best=t;}});
+    b.verdict=best;
+    return b;
+  }).sort(function(a,b){return (b.isRule-a.isRule)||(b.total-a.total);});
+}
+function renderMatrix(){
+  var g=G(), rows=matrixRows(), n=0;
+  var th=CFG.ruleThreshold||{speakers:2,total:3};
+  $("#mtx-sub").textContent="成立門檻：至少 "+th.speakers+" 位說話人出現，且合計至少 "+th.total+
+    " 次。達標的會標上編號 R1、R2…，後面的步驟都用編號指涉。";
+  $("#mtx-rows").innerHTML=rows.length?rows.map(function(b){
+    var id=b.isRule?("R"+(++n)):"";
+    b.rid=id;
+    var cells=["S1","S2","S3"].map(function(s){
+      var v=b.s[s]||0;
+      return '<td class="cell"><b class="'+(v?"hit":"no")+'">'+(v||"·")+"</b></td>";}).join("");
+    return "<tr"+(b.isRule?' class="isrule"':"")+"><td>"+esc(b.tag)+"</td><td>"+esc(b.lv)+"</td>"+cells+
+      '<td class="cell mono">'+b.total+'</td><td class="cell mono">'+(b.denom||"—")+'</td>'+
+      '<td class="cell mono">'+(b.rate!=null?(b.rate*100).toFixed(0)+"%":"—")+"</td>"+
+      '<td><span class="chip '+(b.verdict==="?"?"n":esc(b.verdict))+'">'+esc(b.verdict)+"</span></td>"+
+      '<td class="mono">'+esc(id||"—")+"</td></tr>";}).join("")
+    :'<tr><td colspan="10" class="muted">還沒有資料。先到上面新增觀察。</td></tr>';
+  var noDenom=rows.filter(function(b){return b.isRule&&!b.denom;}).length;
+  $("#mtx-warn").innerHTML=rows.length
+    ? "<strong>"+n+" 條達標。</strong>"+
+      (noDenom?" 其中 "+noDenom+" 條沒有分母——沒有分母只能談印象，不能談出現率，實證比對也只能用覆蓋率。":
+       " 全部都有分母，可以算出真正的出現率。")
+    : "";
+}
+function rules(){return matrixRows().filter(function(b){return b.isRule;});}
+function renderRuleSelects(){
+  var rs=rules(), n=0;
+  var opts=rs.map(function(b){n++;return '<option value="R'+n+'">R'+n+"　"+esc(b.tag)+"</option>";}).join("");
+  ["#p2-rule","#a-rule","#s-rule","#t-rule"].forEach(function(s){
+    var el=$(s), keep=el.value;
+    el.innerHTML=opts||'<option value="">（還沒有成立的規律）</option>';
+    if(keep)el.value=keep;
+  });
+  renderPrompt(); renderAlign();
+}
+function pickedRule(sel){
+  var v=$(sel).value; if(!v)return null;
+  var i=Number(v.slice(1))-1, rs=rules();
+  return rs[i]?Object.assign({rid:v},rs[i]):null;
+}
+
+/* ═══ 提示詞 ═══ */
+function renderPrompt(){
+  var g=G(), r=pickedRule("#p2-rule");
+  var kb=(r&&D.kb[r.tag])||D.kbDefault;
+  $("#p2-prompt").textContent=
+"我們是華語教學課程的學生，正在分析一位母語為"+g.l1+"的華語學習者的語音偏誤。\n\n"+
+"【我們觀察到的現象】\n"+(r?("面向："+r.lv+"\n標籤："+r.tag+"\n出現情形："+r.spkN+" 位說話人、合計 "+r.total+" 次"+
+  (r.denom?("、分母 "+r.denom+"、出現率約 "+(r.rate*100).toFixed(0)+"%"):"、未記錄分母")):"（請先在步驟一產生至少一條成立的規律）")+"\n\n"+
+"【我們自己的假設】\n（在這裡貼上你們組先寫好的假設，不要留空——這是這次協作的重點）\n\n"+
+"【請你做四件事】\n"+
+"1. 針對這個現象，從"+g.l1+"與華語的音系對比，提出可能的成因。請明確區分哪些是母語負遷移、哪些是目的語規則過度泛化、哪些可能是教學誘發。\n"+
+"2. 對每一個成因，說明它預測我們還應該在語料裡看到什麼。我們會回去聽，用來檢驗你的說法。\n"+
+"3. 明講你這些說法的證據等級：是有實證研究支持，還是只有音系推論？如果只有推論，請直說。\n"+
+"4. 指出我們的假設跟你的分析差在哪裡，不要直接同意我們。\n\n"+
+"【限制】\n"+
+"．不要用「研究顯示」這種句式，除非你能講出是誰在什麼時候對什麼對象做的研究。\n"+
+"．不確定就說不確定，並說明還需要什麼資料才能確認。\n"+
+"．我們已知的教學要領如下，請不要重複，直接補充你認為缺的部分：\n"+(kb.p||"（無）");
+}
+$("#p2-rule").addEventListener("change",renderPrompt);
+$("#btn-copy-p2").addEventListener("click",function(){copyText($("#p2-prompt").textContent,"提示詞");});
+
+/* ═══ AI 紀錄 ═══ */
+function renderAi(){
+  var list=HPLStore.get("ai");
+  $("#ai-count").textContent=list.length+" 則（建議 3–5 則）";
+  $("#ailist").innerHTML=list.length?list.slice().reverse().map(function(r){
+    return '<div class="rec"><div class="rh"><span class="id mono">'+esc(r.rule||"—")+'</span>'+
+      '<span class="rowbtns"><span class="chip i">'+esc(r.verdict)+'</span>'+
+      '<button class="act tiny" data-delai="'+r.id+'">刪除</button></span></div>'+
+      "<dl><dt>我們的假設</dt><dd>"+esc(r.hypo)+"</dd><dt>提問</dt><dd>"+esc(r.q)+"</dd>"+
+      "<dt>回答重點</dt><dd>"+esc(r.r)+"</dd><dt>差異</dt><dd>"+esc(r.h)+"</dd>"+
+      "<dt>我們怎麼處理</dt><dd>"+esc(r.u)+"</dd></dl></div>";}).join("")
+    :'<p class="muted">還沒有協作紀錄。</p>';
+  $$("[data-delai]").forEach(function(b){b.addEventListener("click",function(){
+    HPLStore.remove("ai",b.dataset.delai);});});
+  updateDots();
+}
+$("#btn-add-ai").addEventListener("click",function(){
+  var hypo=$("#a-hypo").value.trim();
+  if(!hypo){toast("請先寫下你們自己的假設——這一步不能跳過");$("#a-hypo").focus();return;}
+  HPLStore.add("ai",{hypo:hypo,q:$("#a-q").value.trim(),r:$("#a-r").value.trim(),
+    h:$("#a-h").value.trim(),u:$("#a-u").value.trim(),
+    rule:$("#a-rule").value,verdict:$("#a-verdict").value});
+  ["#a-hypo","#a-q","#a-r","#a-h","#a-u"].forEach(function(s){$(s).value="";});
+  toast("已新增");
+});
+
+/* ═══ 查證 ═══ */
+function renderSrc(){
+  var list=HPLStore.get("src");
+  $("#src-count").textContent=list.length+" 筆";
+  $("#srclist").innerHTML=list.length?list.slice().reverse().map(function(r){
+    return '<div class="rec"><div class="rh"><span class="id mono">'+esc(r.rule||"—")+"　"+esc(r.level)+"</span>"+
+      '<span class="rowbtns"><span class="chip '+(r.result==="支持"?"C":r.result==="不支持"?"A":"B")+'">'+
+      esc(r.result)+'</span><button class="act tiny" data-delsrc="'+r.id+'">刪除</button></span></div>'+
+      "<dl><dt>書目</dt><dd>"+esc(r.cite)+"</dd><dt>它說了什麼</dt><dd>"+esc(r.say)+"</dd></dl></div>";}).join("")
+    :'<p class="muted">還沒有查證紀錄。</p>';
+  $$("[data-delsrc]").forEach(function(b){b.addEventListener("click",function(){
+    HPLStore.remove("src",b.dataset.delsrc);});});
+  updateDots();
+}
+$("#btn-add-src").addEventListener("click",function(){
+  var cite=$("#s-cite").value.trim();
+  if(!cite){toast("請填書目資訊");return;}
+  HPLStore.add("src",{rule:$("#s-rule").value,level:$("#s-level").value,
+    result:$("#s-result").value,cite:cite,say:$("#s-say").value.trim()});
+  $("#s-cite").value="";$("#s-say").value="";toast("已新增");
+});
+
+/* ═══ 一致性 ═══ */
+function renderAlign(){
+  var t=pickedRule("#t-rule"), why=$("#t-why").value.trim();
+  var srcs=HPLStore.get("src").filter(function(s){return t&&s.rule===t.rid;});
+  var strong=srcs.filter(function(s){return /L1|L2/.test(s.level)&&s.result!=="不支持";});
+  var ais=HPLStore.get("ai").filter(function(a){return t&&a.rule===t.rid;});
+  var cs=[
+    [!!t,"已從成立的規律中選定教學目標"],
+    [why.length>40,"選擇理由已依四個指標論證（目前 "+why.length+" 字）"],
+    [/不選|沒有選|未選/.test(why),"理由中明確寫出「我們不選 Rx，因為……」"],
+    [srcs.length>0,"這條規律有查證紀錄（"+srcs.length+" 筆）"],
+    [strong.length>0,"其中至少一筆是 L1 或 L2 層級"],
+    [ais.length>0,"這條規律有對應的 AI 協作紀錄"]
+  ];
+  $("#align").innerHTML='<div class="steps">'+cs.map(function(c){
+    return '<div class="stepc"><div class="no" style="background:'+(c[0]?"var(--teal)":"var(--rule-strong)")+'">'+
+      (c[0]?"✓":"·")+'</div><div><p style="color:'+(c[0]?"var(--ink-2)":"var(--ink)")+'">'+esc(c[1])+"</p></div></div>";
+  }).join("")+"</div>";
+  updateDots();
+}
+["#t-rule","#t-why"].forEach(function(s){$(s).addEventListener("input",renderAlign);$(s).addEventListener("change",renderAlign);});
+
+/* ═══ 方案骨架 ═══ */
+$("#btn-build").addEventListener("click",function(){
+  var t=pickedRule("#t-rule");
+  if(!t){toast("請先選定教學目標");return;}
+  var g=G(), kb=D.kb[t.tag]||D.kbDefault;
+  $("#plan-out").textContent=
+"糾音方案骨架｜"+g.n+"（"+g.l1+"）\n目標規律："+t.rid+"　"+t.lv+" · "+t.tag+
+"\n出現情形："+t.spkN+" 位說話人、合計 "+t.total+" 次"+(t.denom?("、出現率約 "+(t.rate*100).toFixed(0)+"%"):"、未記錄分母")+
+"\n程度："+$("#t-level").value+"　時間："+$("#t-time").value+"\n\n"+
+"① 診斷說明（用學習者聽得懂的話）\n"+kb.d+"\n\n"+
+"② 感知訓練\n先確認學習者聽不聽得出差別。用下列最小對立對做 AX 判斷，正確率八成再進產出。\n"+
+(kb.pairs.length?kb.pairs.map(function(p){return "　· "+p;}).join("\n"):"　（請自行補上最小對立對）")+
+"\n\n注意：感知已經達標的學習者不要再練感知，直接進產出。\n\n"+
+"③ 產出訓練\n"+kb.p+"\n順序：單音節 → 雙音節 → 詞組 → 語流。每一級都要錄音回放。\n\n"+
+"④ 回饋設計\n教師即時回饋語句：「再一次，這次讓"+"（指出具體的動作）"+"。」\nAI 可以做的：大量重複操練、練習語料生成、進度紀錄。\nAI 做不到的：確認診斷、發音部位的體感引導、動機支持。\n\n"+
+"⑤ 人機分工\n人：診斷確認、體感引導、情意支持、語用判斷。\nAI：語料生成、重複操練、即時聲學回饋（須人工複核）、進度紀錄。\n\n"+
+"⑥ 評量指標\n．最小對立對辨別正確率從 ___% 提升到 ___%\n．單音節產出正確率（兩位獨立評分者）\n．詞組層次的保持率\n．聽寫測試：請未聽過的人寫下來，比對正確字數\n";
+  toast("已產生");
+});
+$("#btn-copy-plan").addEventListener("click",function(){
+  var t=$("#plan-out").textContent.trim();
+  if(!t){toast("請先產生方案骨架");return;}copyText(t,"方案骨架");});
+
+/* ═══ 實證比對 ═══ */
+var lastCompare=null;
+function refreshCompare(){
+  var l1sel=$("#cmp-l1");
+  if(!l1sel.options.length){
+    l1sel.innerHTML=D.l1s.map(function(x){return '<option>'+esc(x)+"</option>";}).join("");
+    l1sel.value=G().l1;
+  }
+  var scope=$("#cmp-scope").value, l1=l1sel.value;
+  $("#cmp-out").innerHTML='<p class="muted">整理中…</p>';
+
+  var p = scope==="group"
+    ? Promise.resolve({groups:[{groupId:gid,data:{records:recs()}}]})
+    : HPLStore.classSummary();
+
+  p.then(function(cd){
+    var flat=HPLCompare.flatten(cd,D).filter(function(r){return (r.l1||"")===l1;});
+    var agg=HPLCompare.aggregate(flat,D);
+    var res=HPLCompare.compare(D,agg,l1);
+    lastCompare=res;
+
+    var learnerName=res.learner?(res.learner.name+"（"+res.learner.l1+"）"):"（content/learners.md 裡沒有這個母語的預測檔案）";
+    $("#cmp-meta").innerHTML="對照對象："+esc(learnerName)+
+      "　·　觀察筆數 "+res.records+"　·　說話人 "+res.speakerCount+" 位"+
+      (cd.local?"　·　<strong>離線模式：只看得到這台電腦存過的組別</strong>":"")+
+      (res.hasDenominator?("　·　"+Math.round(res.denomShare*100)+"% 的記錄有分母"):"　·　沒有任何記錄填了分母，只能用覆蓋率");
+
+    $("#cmp-out").innerHTML=res.rows.length
+      ? HPLViz.compareBars(res)
+      : '<p class="muted">這個母語還沒有任何可比對的標註。先到「一 聽」新增觀察，並確認標籤有對應的比對鍵。</p>';
+
+    var a=res.agreement;
+    var rho=a.rho==null?null:a.rho;
+    $("#cmp-agree").innerHTML="<strong>排序一致度：</strong>"+
+      (rho==null?("尚未計算——"+esc(a.why)+"。"):
+        ("Spearman ρ = "+rho.toFixed(2)+"（n = "+a.n+"）。"+
+         (rho>=.6?"預測與觀察的排序大致一致。":rho>=.3?"只有中等程度的一致。":rho>=0?"幾乎沒有一致性——值得把落差當成報告的主軸。":
+          "呈現反向關係：預測排在前面的，實際上反而少見。這是最值得寫的一種結果。")))+
+      "<br><span class=\"muted\">這個數字只說明<strong>排序</strong>像不像，不說明預測「對不對」。"+
+      "樣本是本班語料，不能推論到該母語的一般情形。</span>";
+  }).catch(function(e){
+    $("#cmp-out").innerHTML='<p class="muted">抓不到資料：'+esc(e.message||e)+"</p>";
+  });
+}
+$("#btn-cmp-refresh").addEventListener("click",refreshCompare);
+$("#cmp-scope").addEventListener("change",refreshCompare);
+$("#cmp-l1").addEventListener("change",refreshCompare);
+
+/* ═══ 進度點 ═══ */
+function updateDots(){
+  var why=$("#t-why").value.trim();
+  var d={1:recs().length>=6,2:HPLStore.get("ai").length>=3,3:HPLStore.get("src").length>=2,
+    4:!!pickedRule("#t-rule")&&why.length>40};
+  $$("[data-dot]").forEach(function(el){el.classList.toggle("done",!!d[el.dataset.dot]);});
+  renderSubmitCheck();
+}
+
+/* ═══ 繳交檢核 ═══ */
+function renderSubmitCheck(){
+  var m=HPLStore.meta(), rs=rules(), t=pickedRule("#t-rule");
+  var withDenom=recs().filter(function(r){return r.denom;}).length;
+  var cs=[
+    [recs().length>=6,"至少 6 筆觀察記錄（目前 "+recs().length+" 筆）"],
+    [!!m.calTotal,"已記錄步驟〇的聽力校準結果"],
+    [rs.length>=1,"至少 1 條規律成立（目前 "+rs.length+" 條）"],
+    [!CFG.requireDenominator||withDenom>0,"至少有記錄分母的觀察（目前 "+withDenom+" 筆）"],
+    [HPLStore.get("ai").length>=3,"至少 3 則 AI 協作紀錄（目前 "+HPLStore.get("ai").length+" 則）"],
+    [HPLStore.get("src").length>=2,"至少 2 筆查證紀錄（目前 "+HPLStore.get("src").length+" 筆）"],
+    [HPLStore.get("src").filter(function(s){return /L1|L2/.test(s.level);}).length>0,"其中至少 1 筆是 L1 或 L2 層級"],
+    [!!t,"已選定教學目標並綁定規律編號"],
+    [$("#t-why").value.trim().length>40,"教學目標的選擇理由已論證"],
+    [!!m.ttFb,"已完成五分鐘試教並記錄回饋"]
+  ];
+  var bad=cs.filter(function(c){return !c[0];}).length;
+  $("#submit-check").innerHTML=
+    '<div class="note '+(bad?"warn":"good")+'" style="margin-bottom:14px">'+
+    (bad?("<strong>還有 "+bad+" 項沒完成。</strong>"):"<strong>全部完成。</strong>")+"</div>"+
+    '<div class="steps">'+cs.map(function(c){
+      return '<div class="stepc"><div class="no" style="background:'+(c[0]?"var(--teal)":"var(--crimson)")+'">'+
+        (c[0]?"✓":"!")+'</div><div><p>'+esc(c[1])+"</p></div></div>";}).join("")+"</div>";
+}
+
+/* ═══ meta 欄位 ═══ */
+var META_FIELDS=[["#cal-clip","calClip"],["#cal-n","calN"],["#cal-agree","calAgree"],["#cal-total","calTotal"],
+  ["#cal-note","calNote"],["#t-level","tLevel"],["#t-time","tTime"],["#t-why","tWhy"],
+  ["#tt-who","ttWho"],["#tt-fb","ttFb"],["#tt-fix","ttFix"]];
+function metaFromForm(){
+  var o={};
+  META_FIELDS.forEach(function(p){o[p[1]]=$(p[0]).value;});
+  var t=pickedRule("#t-rule"); o.tRule=t?t.rid:""; o.tRuleTag=t?t.tag:"";
+  D.roles.forEach(function(r,i){var el=$("#role-"+i);if(el)o["role"+i]=el.value;});
+  return o;
+}
+function metaToForm(){
+  var m=HPLStore.meta()||{};
+  META_FIELDS.forEach(function(p){if(m[p[1]]!=null)$(p[0]).value=m[p[1]];});
+  D.roles.forEach(function(r,i){var el=$("#role-"+i);if(el&&m["role"+i]!=null)el.value=m["role"+i];});
+  renderCalRate();
+}
+function renderCalRate(){
+  var a=Number($("#cal-agree").value), t=Number($("#cal-total").value);
+  $("#cal-rate").textContent=(a&&t)?("一致率 "+Math.round(a/t*100)+"%（"+a+"／"+t+"）"):"";
+}
+["#cal-agree","#cal-total"].forEach(function(s){$(s).addEventListener("input",renderCalRate);});
+["#btn-save-roles","#btn-save-cal","#btn-save-target","#btn-save-tt"].forEach(function(s){
+  $(s).addEventListener("click",function(){HPLStore.setMeta(metaFromForm()).then(function(){toast("已儲存");});});});
+
+/* ═══ 匯出 ═══ */
+function buildExport(){
+  var g=G(), m=HPLStore.meta()||{}, rs=rules(), t=pickedRule("#t-rule");
+  var L=[];
+  L.push("# "+g.n+"　語音分析工作紀錄");
+  L.push("");
+  L.push("母語背景："+g.l1+"　｜　產生時間："+new Date().toLocaleString("zh-TW"));
+  L.push("");
+  L.push("## 語料");
+  g.f.forEach(function(f,i){L.push("- S"+(i+1)+"　"+f[0]+"　"+mmss(f[1])+"　說話人代號 "+f[2]);});
+  L.push("");
+  L.push("## 步驟〇：聽力校準");
+  L.push("- 片段："+(m.calClip||"（未填）"));
+  L.push("- 參與人數："+(m.calN||"（未填）")+"　多數人標到 "+(m.calAgree||"?")+" 項　全組共標出 "+(m.calTotal||"?")+" 項");
+  if(m.calAgree&&m.calTotal)L.push("- 一致率："+Math.round(m.calAgree/m.calTotal*100)+"%");
+  L.push("- 不一致的處理："+(m.calNote||"（未填）"));
+  L.push("");
+  L.push("## 觀察記錄（"+recs().length+" 筆）");
+  L.push("");
+  L.push("| 音檔 | 時間碼 | 字詞 | 面向 | 標籤 | 分母 | 判斷 | 標註者 | 描述 |");
+  L.push("|---|---|---|---|---|---|---|---|---|");
+  recs().forEach(function(r){
+    L.push("| "+[r.spk,r.tc,r.word,r.lv,r.tag,(r.denom||"—"),r.tri,(r.by||"—"),String(r.desc||"").replace(/\|/g,"／")].join(" | ")+" |");
+  });
+  L.push("");
+  L.push("## 重現矩陣");
+  L.push("");
+  L.push("| 編號 | 現象 | 面向 | S1 | S2 | S3 | 合計 | 分母 | 出現率 | 判斷 |");
+  L.push("|---|---|---|---|---|---|---|---|---|---|");
+  matrixRows().forEach(function(b){
+    L.push("| "+[(b.rid||"—"),b.tag,b.lv,(b.s.S1||0),(b.s.S2||0),(b.s.S3||0),b.total,
+      (b.denom||"—"),(b.rate!=null?(b.rate*100).toFixed(0)+"%":"—"),b.verdict].join(" | ")+" |");
+  });
+  L.push("");
+  L.push("## AI 協作歷程（"+HPLStore.get("ai").length+" 則）");
+  HPLStore.get("ai").forEach(function(a,i){
+    L.push("");L.push("### 第 "+(i+1)+" 則　"+(a.rule||"—")+"　"+a.verdict);
+    L.push("- 我們的假設："+a.hypo);
+    L.push("- 提問："+a.q);
+    L.push("- 回答重點："+a.r);
+    L.push("- 差異："+a.h);
+    L.push("- 我們怎麼處理："+a.u);
+  });
+  L.push("");
+  L.push("## 查證紀錄（"+HPLStore.get("src").length+" 筆）");
+  L.push("");
+  L.push("| 規律 | 層級 | 結果 | 書目 | 它說了什麼 |");
+  L.push("|---|---|---|---|---|");
+  HPLStore.get("src").forEach(function(s){
+    L.push("| "+[s.rule,s.level,s.result,String(s.cite||"").replace(/\|/g,"／"),String(s.say||"").replace(/\|/g,"／")].join(" | ")+" |");
+  });
+  L.push("");
+  L.push("## 教學目標");
+  L.push("- 規律："+(t?(t.rid+"　"+t.lv+" · "+t.tag):"（未選定）"));
+  L.push("- 程度："+(m.tLevel||"—")+"　時間："+(m.tTime||"—"));
+  L.push("- 選擇理由："+(m.tWhy||"（未填）"));
+  L.push("");
+  L.push("## 五分鐘試教");
+  L.push("- 對象："+(m.ttWho||"（未填）"));
+  L.push("- 對方的回饋："+(m.ttFb||"（未填）"));
+  L.push("- 我們因此改了："+(m.ttFix||"（未填）"));
+  var plan=$("#plan-out").textContent.trim();
+  if(plan){L.push("");L.push("## 糾音方案骨架");L.push("");L.push("```");L.push(plan);L.push("```");}
+  if(lastCompare){
+    L.push("");L.push("## 實證比對（"+lastCompare.l1+"）");
+    L.push("");
+    L.push("| 現象 | 預測強度 | 觀察 | 判定 | 證據等級 |");
+    L.push("|---|---|---|---|---|");
+    lastCompare.rows.filter(function(r){return r.predW>0||r.hits>0;}).forEach(function(r){
+      var obs=r.rate!=null?((r.rate*100).toFixed(0)+"%"):(r.hits?(r.speakerCount+"/"+lastCompare.speakerCount+" 人"):"—");
+      L.push("| "+[r.name,(r.pred||"—"),obs,{hit:"命中",miss:"落空",extra:"預測之外",na:"—"}[r.verdict],(r.ev||"—")].join(" | ")+" |");
+    });
+    L.push("");
+    L.push(lastCompare.agreement.rho!=null
+      ? ("排序一致度 Spearman ρ = "+lastCompare.agreement.rho.toFixed(2)+"（n = "+lastCompare.agreement.n+"）")
+      : ("排序一致度：未計算（"+lastCompare.agreement.why+"）"));
+  }
+  L.push("");
+  L.push("---");
+  L.push("");
+  L.push("本紀錄由聽問查教工作台產生。示範學習者的預測值為對比分析推論，非實測數據，不可引用。");
+  return L.join("\n");
+}
+$("#btn-export").addEventListener("click",function(){
+  $("#export-out").textContent=buildExport();toast("已產生");});
+$("#btn-copy-export").addEventListener("click",function(){
+  var t=$("#export-out").textContent.trim();
+  if(!t||t.indexOf("按「產生")===0){toast("請先產生匯出內容");return;}
+  copyText(t,"匯出內容");});
+$("#btn-dl-export").addEventListener("click",function(){
+  var t=$("#export-out").textContent.trim();
+  if(!t||t.indexOf("按「產生")===0){toast("請先產生匯出內容");return;}
+  var fn=G().n+"_語音分析工作紀錄.md";
+  if(dlFn){dlFn.save({filename:fn,data:t}).catch(function(){});return;}
+  try{
+    var b=new Blob([t],{type:"text/markdown;charset=utf-8"});
+    var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=fn;
+    document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},0);
+  }catch(e){toast("下載未完成，請改用「複製」");}
+});
+var clearArmed=false;
+$("#btn-clear").addEventListener("click",function(){
+  if(!clearArmed){clearArmed=true;$("#btn-clear").textContent="再按一次確認清除";
+    setTimeout(function(){clearArmed=false;$("#btn-clear").textContent="清除本組資料";},4000);return;}
+  clearArmed=false;$("#btn-clear").textContent="清除本組資料";
+  HPLStore.clearLocal();toast("已清除本機記錄（雲端資料不受影響）");
+});
+
+/* ═══ 連線狀態 ═══ */
+function renderConn(){
+  var s=HPLStore.state, el=$("#conn"), t=$("#conn-t");
+  el.className="conn"+(s.mode==="local"?"":(s.online?" on":" off"));
+  t.textContent=s.mode==="local"?"只存在這台電腦"
+    :s.mode==="claude"?(s.online?"全組即時同步":"連線中…")
+    :(s.online?"已同步到試算表":"離線——資料仍存在本機");
+  $("#foot-note").textContent=s.mode==="local"
+    ? "資料只存在這台電腦的這個瀏覽器裡，不會同步、不會上傳。做完一段就按「產生匯出內容」下載 .md 存檔。"
+    : "資料會同時存到雲端與這台電腦。即使斷線也不會掉，恢復連線後再按一次儲存即可。";
+}
+
+/* ═══ 切換組別 ═══ */
+function switchGroup(){
+  renderGroupBar(); renderPlayers(); renderContrast();
+  HPLStore.setGroup(gid).then(function(){
+    metaToForm(); renderRecs(); renderAi(); renderSrc();
+    $("#plan-out").textContent=""; lastCompare=null;
+    $("#cmp-l1").innerHTML="";
+  });
+}
+$("#sel-group").addEventListener("change",function(){gid=$("#sel-group").value;switchGroup();});
+
+/* ═══ Claude Artifact 能力 ═══ */
+function claudeCaps(){
+  var c=window.claude; if(!c||!c.use)return;
+  c.use("downloads").then(function(d){if(d)dlFn=d;}).catch(function(){});
+  c.use("sample").then(function(s){
+    if(!s)return; sampleFn=s; $("#btn-ask-ai").hidden=false;
+    $("#btn-ask-ai").addEventListener("click",function(){
+      var hypo=$("#a-hypo").value.trim();
+      if(!hypo){toast("請先寫下你們自己的假設——這一步不能跳過");$("#a-hypo").focus();return;}
+      var btn=$("#btn-ask-ai"),stop=$("#btn-ask-stop"),out=$("#ai-out");
+      abortCtl=new AbortController();btn.disabled=true;stop.hidden=false;
+      out.innerHTML='<div class="panel"><div class="panel-bd"><div class="plan muted">思考中…</div></div></div>';
+      var body=out.querySelector(".plan");
+      var p=$("#p2-prompt").textContent.replace("（在這裡貼上你們組先寫好的假設，不要留空——這是這次協作的重點）",hypo);
+      s(p,{modelTier:"complex",cache:false,signal:abortCtl.signal,
+        onText:function(x){body.classList.remove("muted");body.textContent=x.text;}})
+      .then(function(){toast("記得把重點填進上面的欄位，並自行查證");})
+      .catch(function(err){
+        var code=err&&err.code;
+        if(code==="cancelled"){body.textContent=err.text||"";toast("已停止");}
+        else if(["not_granted","sampling_disabled","not_declared","capability_disabled"].indexOf(code)>=0){
+          btn.hidden=true;out.innerHTML="";}
+        else{body.textContent=(err&&err.text)||"";toast(code==="rate_limited"?"請求太頻繁，請稍後再試":"這次沒有取得回覆");}
+      })
+      .then(function(){btn.disabled=false;stop.hidden=true;abortCtl=null;});
+    });
+    $("#btn-ask-stop").addEventListener("click",function(){if(abortCtl)abortCtl.abort();});
+  }).catch(function(){});
+}
+
+/* ═══ 啟動 ═══ */
+document.body.insertAdjacentHTML("afterbegin",
+  '<div id="boot" style="position:fixed;inset:0;display:grid;place-items:center;background:var(--paper);z-index:99">'+
+  '<p class="muted">載入教材內容…</p></div>');
+
+HPLData.load().then(function(data){
+  D=data; gid=D.groups[0].id;
+  renderStatic(); renderLevelSelects();
+  return HPLStore.init();
+}).then(function(){
+  HPLStore.on(function(what){
+    if(what==="sync"||what==="change"||what==="group"||what==="offline"){
+      renderRecs(); renderAi(); renderSrc(); renderConn();
+      if(what==="sync"||what==="group")metaToForm();
+    }
+  });
+  switchGroup(); renderConn(); claudeCaps();
+  var b=document.getElementById("boot"); if(b)b.remove();
+}).catch(function(e){
+  var b=document.getElementById("boot");
+  if(b)b.innerHTML='<div class="wrap" style="max-width:640px"><div class="note stop">'+
+    "<strong>載不進教材內容。</strong><br>"+esc(e.message||e)+
+    "<br><br>最常見的原因：直接用 <code>file://</code> 開這個檔案。瀏覽器不允許這樣讀 content/ 裡的 .md。"+
+    "<br><br>請改用任一靜態伺服器：<br><code>python3 -m http.server 8000</code><br>然後開 http://localhost:8000/v2/"+
+    "<br><br>發布到 GitHub Pages 之後就不會有這個問題。</div></div>";
+});
+})();
+</script>
+</body>
+</html>

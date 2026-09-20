@@ -1,0 +1,83 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><title>selftest</title>
+<link rel="stylesheet" href="assets/base.css"></head><body><div class="wrap"><pre id="out">running…</pre><div id="viz"></div></div>
+<script src="config.js"></script>
+<script>
+// 測試使用獨立班級與本機儲存，不能覆蓋真實學生資料或呼叫正式後端。
+window.HPL_CONFIG = Object.assign({}, window.HPL_CONFIG, {
+  classId: "selftest-" + Date.now(), backendUrl: ""
+});
+</script>
+<script src="assets/md.js"></script><script src="assets/data.js"></script>
+<script src="assets/store.js"></script><script src="assets/compare.js"></script><script src="assets/viz.js"></script>
+<script>
+(function(){
+var log=[],fail=0;
+function ok(c,m){log.push((c?"PASS  ":"FAIL  ")+m); if(!c)fail++;}
+var CFG=window.HPL_CONFIG;
+// seed localStorage as if two groups had saved data
+function seed(gid,recs,meta){localStorage.setItem("hpl2:"+CFG.classId+":"+gid,
+  JSON.stringify({data:{records:recs,ai:[],src:[]},meta:meta||{}}));}
+seed("g02",[
+ {id:"a",at:"1",spk:"S1",spkId:"F-a",tc:"0:10",word:"他",lv:"聲母",tag:"送氣／不送氣對立",key:"aspiration",tri:"A",denom:20,group:"第二組",l1:"法語"},
+ {id:"b",at:"2",spk:"S2",spkId:"F-b",tc:"0:20",word:"好",lv:"聲母",tag:"h 舌根擦音",key:"h",tri:"A",denom:10,group:"第二組",l1:"法語"},
+ {id:"c",at:"3",spk:"S1",spkId:"F-a",tc:"0:30",word:"你",lv:"聲母",tag:"n/l 混淆",key:"nl",tri:"B",denom:8,group:"第二組",l1:"法語"}
+],{tRule:"R1"});
+seed("g03",[
+ {id:"d",at:"4",spk:"S1",spkId:"F-b",tc:"0:05",word:"英",lv:"韻母",tag:"鼻韻尾 -n／-ng",key:"ngn",tri:"A",denom:12,group:"第三組",l1:"法語"},
+ {id:"e",at:"5",spk:"S2",spkId:"F-d",tc:"0:15",word:"買",lv:"聲調",tag:"二聲／三聲對立",key:"t2t3",tri:"A",denom:16,group:"第三組",l1:"法語"}
+]);
+seed("g01",[
+ {id:"f",at:"6",spk:"S1",spkId:"A-a",tc:"0:08",word:"西",lv:"聲母",tag:"舌面 j/q/x",key:"palatal",tri:"A",denom:9,group:"第一組",l1:"美式英語"}
+]);
+
+HPLData.load().then(function(D){
+  return HPLStore.init().then(function(){return D;});
+}).then(function(D){
+  ok(HPLStore.state.mode==="local","離線模式（config 未填 backendUrl）：得到 "+HPLStore.state.mode);
+  return HPLStore.classSummary().then(function(cd){
+    ok(cd.local===true,"classSummary 標記為本機來源");
+    ok(cd.groups.length===3,"讀到 3 組，實得 "+cd.groups.length);
+    var flat=HPLCompare.flatten(cd,D);
+    ok(flat.length===6,"攤平後 6 筆，實得 "+flat.length);
+    ok(flat.every(function(r){return r.l1&&r.group;}),"每筆都有 l1 與 group");
+
+    var fr=flat.filter(function(r){return r.l1==="法語";});
+    var res=HPLCompare.compare(D,HPLCompare.aggregate(fr,D),"法語");
+    ok(res.learner&&res.learner.l1==="法語","找到法語示範學習者："+(res.learner&&res.learner.name));
+    ok(res.records===5,"法語觀察 5 筆，實得 "+res.records);
+    ok(res.speakerCount===3,"法語說話人 3 位，實得 "+res.speakerCount);
+    ok(res.hasDenominator===true,"偵測到分母");
+    var v={};res.rows.forEach(function(r){v[r.key]=r.verdict;});
+    ok(v.aspiration==="hit","送氣=命中，實得 "+v.aspiration);
+    ok(v.h==="hit","h=命中，實得 "+v.h);
+    ok(v.ngn==="hit","鼻韻尾=命中，實得 "+v.ngn);
+    ok(v.nl==="extra","n/l=預測之外，實得 "+v.nl);
+    ok(v.sibilant==="miss","舌尖後=落空，實得 "+v.sibilant);
+    var asp=res.rows.filter(function(r){return r.key==="aspiration";})[0];
+    ok(Math.abs(asp.rate-1/20)<1e-9,"送氣出現率 = 1/20，實得 "+asp.rate);
+    ok(!!asp.baseline,"送氣有文獻基準線");
+
+    // 美式英語別名
+    var en=flat.filter(function(r){return r.l1==="美式英語";});
+    var rE=HPLCompare.compare(D,HPLCompare.aggregate(en,D),"美式英語");
+    ok(rE.learner&&rE.learner.name==="學習者 E","英語別名對應到學習者 E，實得 "+(rE.learner&&rE.learner.name));
+
+    // 零資料時不應該全標落空
+    var zero=HPLCompare.compare(D,{},"日語");
+    var html0=HPLViz.compareBars(zero);
+    ok(html0.indexOf("落空")<0,"零資料時不出現「落空」字樣");
+    ok(html0.indexOf("還沒有任何學生標註")>=0,"零資料時顯示提示語");
+
+    document.getElementById("viz").innerHTML=HPLViz.compareBars(res);
+    ok(document.querySelectorAll("#viz .cmprow").length>0,"比對條有渲染出來");
+
+    // 清乾淨
+    ["g01","g02","g03"].forEach(function(g){localStorage.removeItem("hpl2:"+CFG.classId+":"+g);});
+    log.push("");log.push(fail?("=== "+fail+" 項失敗 ==="):"=== 全部通過 ===");
+    document.getElementById("out").textContent=log.join("\n");
+  });
+}).catch(function(e){
+  document.getElementById("out").textContent="ERROR: "+(e&&e.stack||e);
+});
+})();
+</script></body></html>

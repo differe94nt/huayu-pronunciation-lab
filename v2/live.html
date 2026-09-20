@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>即時看板</title>
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .big{font-size:15px}
+  .flash{animation:fl 1.2s ease-out}
+  @keyframes fl{0%{background:var(--indigo-soft)}100%{background:transparent}}
+  .feed{display:flex;flex-direction:column;gap:7px;max-height:440px;overflow:auto}
+  .fitem{border:1px solid var(--rule);border-radius:var(--r);background:var(--surface);padding:8px 12px;font-size:12.5px}
+  .fitem .fh{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap;margin-bottom:2px}
+  .fitem .fg{font-weight:700}
+  .fitem .ft{font-family:var(--m);font-size:11px;color:var(--ink-3)}
+</style>
+</head>
+<body>
+
+<header class="mast"><div class="wrap">
+  <div class="kicker">NTU · AI 與人文 · 教師端</div>
+  <h1 class="t">即時看板</h1>
+  <p class="sub">全班的標註進度與觀察內容。每 <span id="poll-s">12</span> 秒自動更新一次。投影用。</p>
+  <nav class="rail" role="tablist">
+    <button role="tab" id="tab-p" aria-controls="p-p" aria-selected="true">進度</button>
+    <button role="tab" id="tab-f" aria-controls="p-f" aria-selected="false">觀察流</button>
+    <button role="tab" id="tab-a" aria-controls="p-a" aria-selected="false">全班彙總</button>
+    <button role="tab" id="tab-c" aria-controls="p-c" aria-selected="false">預測比對</button>
+    <button role="tab" id="tab-d" aria-controls="p-d" aria-selected="false">討論題</button>
+  </nav>
+</div></header>
+
+<div class="gbar"><div class="wrap">
+  <span class="statline"><b id="s-groups">0</b>&nbsp;組已開始</span>
+  <span class="statline"><b id="s-recs">0</b>&nbsp;筆觀察</span>
+  <span class="statline"><b id="s-rules">0</b>&nbsp;條規律成立</span>
+  <span class="statline"><b id="s-denom">0%</b>&nbsp;有分母</span>
+  <span style="flex:1"></span>
+  <button class="act tiny" id="btn-pause">暫停更新</button>
+  <button class="act tiny" id="btn-now">立刻更新</button>
+  <span class="conn" id="conn"><i></i><span id="conn-t">載入中</span></span>
+</div></div>
+
+<main class="wrap">
+
+<section role="tabpanel" id="p-p" aria-labelledby="tab-p" class="on">
+  <div class="block"><h2><span class="tag">進度</span>各組狀態</h2>
+    <p>灰掉的是還沒有任何資料的組。長條是四個步驟的完成度。</p>
+    <div class="livegrid" id="groups"></div></div>
+</section>
+
+<section role="tabpanel" id="p-f" aria-labelledby="tab-f">
+  <div class="block"><h2><span class="tag">流</span>最新觀察</h2>
+    <p>最新的在最上面。可以直接點名討論。</p>
+    <div class="feed" id="feed"></div></div>
+</section>
+
+<section role="tabpanel" id="p-a" aria-labelledby="tab-a">
+  <div class="block"><h2><span class="tag">彙總</span>全班標了什麼</h2>
+    <p>依現象標籤統計。括號裡是「幾組標到」。</p>
+    <div class="tscroll"><table><thead><tr><th>現象</th><th>面向</th><th class="mono">次數</th>
+      <th class="mono">組數</th><th class="mono">說話人</th><th>A／B／C</th></tr></thead>
+      <tbody id="agg-rows"></tbody></table></div></div>
+  <div class="block"><h2><span class="tag">母語</span>依母語分</h2>
+    <div class="livegrid" id="byl1"></div></div>
+</section>
+
+<section role="tabpanel" id="p-c" aria-labelledby="tab-c">
+  <div class="block"><h2><span class="tag">比對</span>預測 vs 全班觀察</h2>
+    <p>灰條是糾音工作台的預測強度（序位），藍條是全班實際標到的。橘條是文獻基準線。</p>
+    <div class="formgrid g2" style="margin-bottom:16px">
+      <div><label class="fld" for="cmp-l1">母語</label><select class="inp" id="cmp-l1"></select></div>
+    </div>
+    <div class="panel"><div class="panel-bd" id="cmp-out"><p class="muted">等資料進來…</p></div></div>
+    <div class="note" style="margin-top:14px" id="cmp-agree"></div></div>
+</section>
+
+<section role="tabpanel" id="p-d" aria-labelledby="tab-d">
+  <div class="block"><h2><span class="tag">討論</span>現在可以問全班的問題</h2>
+    <p>這些題目會隨著資料進來而改變——有資料才會出現。</p>
+    <div class="steps" id="questions"></div></div>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  <p>資料來源：<span id="src-note">—</span></p>
+  <p>學生資料僅供課堂討論使用。畫面上不顯示個別學生姓名以外的識別資訊，錄音本身不在此頁播放。</p>
+</div></footer>
+
+<script src="config.js"></script>
+<script src="assets/md.js"></script>
+<script src="assets/data.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/compare.js"></script>
+<script src="assets/viz.js"></script>
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s);},
+    $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+var esc=MD.esc;
+var CFG=window.HPL_CONFIG||{};
+var D=null, timer=null, paused=false, lastFlat=[], seen={};
+
+$$("nav.rail button").forEach(function(b){b.addEventListener("click",function(){
+  $$("nav.rail button").forEach(function(o){o.setAttribute("aria-selected",String(o===b));});
+  $$("section[role=tabpanel]").forEach(function(p){p.classList.toggle("on",p.id===b.getAttribute("aria-controls"));});
+});});
+
+function pct(a,b){return b?Math.round(a/b*100):0;}
+
+function tick(){
+  if(paused)return;
+  HPLStore.classSummary().then(function(cd){
+    render(cd);
+    $("#conn").className="conn on"; $("#conn-t").textContent="已更新 "+new Date().toLocaleTimeString("zh-TW");
+    $("#src-note").textContent=cd.local
+      ? "離線模式——只讀得到這台電腦存過的組別。要看到全班，請在 config.js 填入 backendUrl，並照 backend/SETUP.md 部署。"
+      : "Google 試算表（班級代號 "+(CFG.classId||"default")+"）";
+  }).catch(function(e){
+    $("#conn").className="conn off"; $("#conn-t").textContent="抓不到資料";
+    $("#src-note").textContent=String(e.message||e);
+  });
+}
+
+function render(cd){
+  var flat=HPLCompare.flatten(cd,D);
+  lastFlat=flat;
+  var byGroup={};
+  (cd.groups||[]).forEach(function(g){
+    var meta=D.groups.filter(function(x){return x.id===g.groupId||x.n===g.groupId;})[0];
+    byGroup[meta?meta.n:g.groupId]={
+      name:meta?meta.n:g.groupId, l1:meta?meta.l1:"",
+      recs:(g.data&&g.data.records)||[], ai:(g.data&&g.data.ai)||[],
+      src:(g.data&&g.data.src)||[], meta:g.meta||{}
+    };
+  });
+
+  /* 進度卡 */
+  var th=CFG.ruleThreshold||{speakers:2,total:3};
+  var totalRules=0, withDenom=0;
+  var cards=D.groups.map(function(g){
+    var G=byGroup[g.n]||{recs:[],ai:[],src:[],meta:{}};
+    var rules=countRules(G.recs,th);
+    totalRules+=rules;
+    withDenom+=G.recs.filter(function(r){return r.denom;}).length;
+    var cold=!G.recs.length&&!G.ai.length&&!G.src.length;
+    var bars=[["觀察",G.recs.length,6],["AI",G.ai.length,3],["查證",G.src.length,2],
+      ["目標",G.meta.tRule?1:0,1]];
+    return '<div class="gcard'+(cold?" cold":"")+'"><h4>'+esc(g.n)+"<span>"+esc(g.l1)+"</span></h4>"+
+      '<div class="muted mini">'+(rules?(rules+" 條規律成立"):"尚無成立的規律")+"</div>"+
+      '<div class="bars">'+bars.map(function(b){
+        return '<div class="gbarrow"><span class="k">'+b[0]+'</span><span class="t"><i style="width:'+
+          Math.min(100,pct(b[1],b[2]))+'%"></i></span><span class="v">'+b[1]+"/"+b[2]+"</span></div>";}).join("")+
+      "</div></div>";
+  }).join("");
+  $("#groups").innerHTML=cards;
+
+  var started=Object.keys(byGroup).filter(function(k){return byGroup[k].recs.length;}).length;
+  $("#s-groups").textContent=started;
+  $("#s-recs").textContent=flat.length;
+  $("#s-rules").textContent=totalRules;
+  $("#s-denom").textContent=pct(withDenom,flat.length)+"%";
+
+  /* 觀察流 */
+  var sorted=flat.slice().sort(function(a,b){return String(b.at).localeCompare(String(a.at));}).slice(0,60);
+  $("#feed").innerHTML=sorted.map(function(r){
+    var isNew=!seen[r.id]; seen[r.id]=true;
+    return '<div class="fitem'+(isNew?" flash":"")+'"><div class="fh">'+
+      '<span class="fg">'+esc(r.group||"")+"</span>"+
+      '<span class="chip n">'+esc(r.l1||"")+"</span>"+
+      '<span class="ft">'+esc(r.spk||"")+" "+esc(r.tc||"")+"</span>"+
+      '<span class="chip '+(r.tri==="?"?"n":esc(r.tri||"n"))+'">'+esc(r.tri||"?")+"</span>"+
+      "</div><div>"+esc(r.lv||"")+" · <strong>"+esc(r.tag||"")+"</strong>　"+esc(r.word||"")+
+      (r.denom?'　<span class="ft">分母 '+esc(r.denom)+"</span>":"")+"</div>"+
+      (r.desc?'<div class="muted mini">'+esc(r.desc)+"</div>":"")+"</div>";
+  }).join("")||'<p class="muted">還沒有觀察進來。</p>';
+
+  /* 彙總 */
+  var byTag={};
+  flat.forEach(function(r){
+    if(!r.tag)return;
+    var b=byTag[r.tag]||(byTag[r.tag]={lv:r.lv,n:0,g:{},s:{},tri:{}});
+    b.n++; if(r.group)b.g[r.group]=1; if(r.spkId)b.s[r.spkId]=1;
+    if(r.tri)b.tri[r.tri]=(b.tri[r.tri]||0)+1;
+  });
+  $("#agg-rows").innerHTML=Object.keys(byTag).sort(function(a,b){return byTag[b].n-byTag[a].n;})
+    .map(function(k){
+      var b=byTag[k];
+      return "<tr><td><strong>"+esc(k)+"</strong></td><td>"+esc(b.lv)+'</td><td class="mono">'+b.n+
+        '</td><td class="mono">'+Object.keys(b.g).length+'</td><td class="mono">'+Object.keys(b.s).length+
+        "</td><td>"+["A","B","C"].map(function(t){
+          return b.tri[t]?'<span class="chip '+t+'">'+t+" "+b.tri[t]+"</span> ":"";}).join("")+"</td></tr>";
+    }).join("")||'<tr><td colspan="6" class="muted">還沒有資料。</td></tr>';
+
+  /* 依母語 */
+  var agg=HPLCompare.aggregate(flat,D);
+  $("#byl1").innerHTML=D.l1s.map(function(l1){
+    var A=agg[l1];
+    if(!A)return '<div class="gcard cold"><h4>'+esc(l1)+"<span>0 筆</span></h4></div>";
+    var keys=Object.keys(A.keys).sort(function(a,b){return A.keys[b].hits-A.keys[a].hits;}).slice(0,6);
+    var max=keys.length?A.keys[keys[0]].hits:1;
+    return '<div class="gcard"><h4>'+esc(l1)+"<span>"+A.records+" 筆 · "+A.speakerCount+" 位說話人</span></h4>"+
+      '<div class="bars">'+keys.map(function(k){
+        return '<div class="gbarrow"><span class="k">'+esc((D.keyName[k]||k).slice(0,6))+
+          '</span><span class="t"><i style="width:'+pct(A.keys[k].hits,max)+'%"></i></span>'+
+          '<span class="v">'+A.keys[k].hits+"</span></div>";}).join("")+"</div></div>";
+  }).join("");
+
+  /* 比對 */
+  var l1=$("#cmp-l1").value||D.l1s[0];
+  var res=HPLCompare.compare(D,agg,l1);
+  $("#cmp-out").innerHTML=res.rows.length?HPLViz.compareBars(res)
+    :'<p class="muted">'+esc(l1)+" 還沒有可比對的資料。</p>";
+  var a=res.agreement;
+  $("#cmp-agree").innerHTML="<strong>"+esc(l1)+" 的排序一致度：</strong>"+
+    (a.rho==null?("尚未計算——"+esc(a.why)+"。"):("Spearman ρ = "+a.rho.toFixed(2)+"（n = "+a.n+"）"))+
+    "　<span class=\"muted\">只說明排序像不像，不說明預測對不對。</span>";
+
+  /* 討論題 */
+  renderQuestions(flat,byGroup,agg);
+}
+
+function countRules(recs,th){
+  var by={};
+  (recs||[]).forEach(function(r){
+    var k=r.lv+"｜"+r.tag;
+    var b=by[k]||(by[k]={s:{},n:0}); b.s[r.spk]=1; b.n++;
+  });
+  return Object.keys(by).filter(function(k){
+    return Object.keys(by[k].s).length>=th.speakers&&by[k].n>=th.total;}).length;
+}
+
+function renderQuestions(flat,byGroup,agg){
+  var qs=[];
+
+  /* 跨組信度：共用說話人的組別標得一不一樣 */
+  var shared={};
+  Object.keys(D.speakerMap).forEach(function(spk){
+    var gs=D.speakerMap[spk].gs;
+    if(gs.length<2)return;
+    var tagsBy={};
+    gs.forEach(function(gn){
+      var G=byGroup[gn]; if(!G)return;
+      tagsBy[gn]={};
+      G.recs.filter(function(r){return r.spkId===spk;}).forEach(function(r){tagsBy[gn][r.tag]=1;});
+    });
+    var names=Object.keys(tagsBy).filter(function(n){return Object.keys(tagsBy[n]).length;});
+    if(names.length>=2){
+      var all={}, common={};
+      names.forEach(function(n){Object.keys(tagsBy[n]).forEach(function(t){all[t]=(all[t]||0)+1;});});
+      Object.keys(all).forEach(function(t){if(all[t]===names.length)common[t]=1;});
+      shared[spk]={names:names,total:Object.keys(all).length,common:Object.keys(common).length};
+    }
+  });
+  Object.keys(shared).forEach(function(spk){
+    var s=shared[spk];
+    qs.push(["跨組信度：說話人 "+spk,
+      s.names.join("、")+" 拿到同一份錄音，一共標出 "+s.total+" 種現象，其中只有 "+s.common+
+      " 種是大家都標到的。一致率 "+pct(s.common,s.total)+"%。"+
+      "問全班：不一致的那些，是誰聽錯了，還是兩邊在講同一件事但用了不同標籤？"]);
+  });
+
+  /* 分母 */
+  var wd=flat.filter(function(r){return r.denom;}).length;
+  if(flat.length&&pct(wd,flat.length)<50){
+    qs.push(["分母只有 "+pct(wd,flat.length)+"%",
+      "超過一半的觀察沒有記錄分母。問全班：沒有分母的情況下，你要怎麼說服讀者這是「規律」而不是「我們剛好注意到」？"]);
+  }
+
+  /* A/B/C 判準 */
+  var tri={A:0,B:0,C:0,"?":0};
+  flat.forEach(function(r){tri[r.tri||"?"]=(tri[r.tri||"?"]||0)+1;});
+  if(tri["?"]>flat.length*0.4&&flat.length>10){
+    qs.push(["待判定還有 "+tri["?"]+" 筆",
+      "四成以上的觀察還沒分類。問全班：判不出 A／B／C 的那些，是因為證據不夠，還是因為判準本身講不清楚？"]);
+  }
+  if(tri.C===0&&flat.length>15){
+    qs.push(["沒有人標出 C 類",
+      "全班沒有任何一筆被判為「僅口音特徵」。這不太可能。問全班：你們是真的沒聽到，還是把所有聽起來不一樣的地方都當成問題了？"]);
+  }
+
+  /* 預測落空／之外 */
+  D.l1s.forEach(function(l1){
+    if(!agg[l1])return;
+    var res=HPLCompare.compare(D,agg,l1);
+    var miss=res.rows.filter(function(r){return r.verdict==="miss";});
+    var extra=res.rows.filter(function(r){return r.verdict==="extra";});
+    if(extra.length){
+      qs.push([l1+"：預測之外有 "+extra.length+" 項",
+        extra.map(function(r){return r.name;}).join("、")+
+        "——工作台沒預測到，學生卻標到了。問全班：這是母語負遷移之外的什麼？教材誘發的嗎？"]);
+    }
+    if(miss.length>=2){
+      qs.push([l1+"：預測落空有 "+miss.length+" 項",
+        miss.map(function(r){return r.name;}).join("、")+
+        "——工作台預測會出現，語料裡卻沒有。問全班：是真的沒出現，還是這些音在你們的語料裡根本沒有出現的機會？"]);
+    }
+  });
+
+  $("#questions").innerHTML=qs.length?qs.map(function(q,i){
+    return '<div class="stepc"><div class="no">'+(i+1)+'</div><div><h4>'+esc(q[0])+
+      "</h4><p>"+esc(q[1])+"</p></div></div>";}).join("")
+    :'<p class="muted">等資料多一點再回來。討論題會隨著學生的標註自動出現。</p>';
+}
+
+$("#btn-pause").addEventListener("click",function(){
+  paused=!paused;
+  $("#btn-pause").textContent=paused?"恢復更新":"暫停更新";
+});
+$("#btn-now").addEventListener("click",function(){var p=paused;paused=false;tick();paused=p;});
+$("#cmp-l1").addEventListener("change",function(){var p=paused;paused=false;tick();paused=p;});
+
+/* 啟動 */
+HPLData.load().then(function(data){
+  D=data;
+  $("#cmp-l1").innerHTML=D.l1s.map(function(x){return "<option>"+esc(x)+"</option>";}).join("");
+  $("#poll-s").textContent=Math.round((CFG.pollMs||12000)/1000);
+  return HPLStore.init();
+}).then(function(){
+  tick();
+  timer=setInterval(tick,Math.max(5000,CFG.pollMs||12000));
+}).catch(function(e){
+  document.body.insertAdjacentHTML("afterbegin",
+    '<div class="wrap" style="padding-block:40px"><div class="note stop"><strong>載不進教材內容。</strong><br>'+
+    esc(e.message||e)+"<br><br>請用靜態伺服器開啟，或發布到 GitHub Pages。</div></div>");
+});
+})();
+</script>
+</body>
+</html>

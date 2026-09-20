@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>華語糾音工作台</title>
+<link rel="stylesheet" href="assets/base.css">
+</head>
+<body>
+
+<header class="mast"><div class="wrap">
+  <div class="kicker">NTU · AI 與人文 · 華語語音教學單元</div>
+  <h1 class="t">華語糾音工作台</h1>
+  <p class="sub">五層面偏誤檔案、五度制調型比對、糾音方案設計。示範資料是<strong>預測清單</strong>，不是實測結果——先讀解讀手冊。</p>
+  <div class="principle">預測落空也是發現</div>
+  <nav class="rail" role="tablist">
+    <button role="tab" id="tab-brief" aria-controls="p-brief" aria-selected="true"><span class="n">01</span>任務指令與語料</button>
+    <button role="tab" id="tab-bench" aria-controls="p-bench" aria-selected="false"><span class="n">02</span>建立語音檔案</button>
+    <button role="tab" id="tab-plan" aria-controls="p-plan" aria-selected="false"><span class="n">03</span>教學目標與糾音設計</button>
+    <button role="tab" id="tab-cmp" aria-controls="p-cmp" aria-selected="false"><span class="n">04</span>實證比對</button>
+    <button role="tab" id="tab-manual" aria-controls="p-manual" aria-selected="false"><span class="n">05</span>解讀手冊</button>
+    <button role="tab" id="tab-ev" aria-controls="p-ev" aria-selected="false"><span class="n">06</span>假設審核</button>
+  </nav>
+</div></header>
+
+<div class="gbar"><div class="wrap">
+  <label class="fld" for="sel-learner" style="margin:0">示範學習者</label>
+  <select id="sel-learner"></select>
+  <span class="gnote" id="l-meta"></span>
+  <span style="flex:1"></span>
+  <span class="conn" id="conn"><i></i><span id="conn-t">載入中</span></span>
+</div></div>
+
+<main class="wrap">
+
+<!-- ═══ 01 ═══ -->
+<section role="tabpanel" id="p-brief" aria-labelledby="tab-brief" class="on">
+  <p class="lede">先讀指令，再挑語料。指令全文可以直接複製貼進 AI 對話框。</p>
+  <div class="block"><h2><span class="tag">指令卡</span>任務指令全文</h2>
+    <div class="rowbtns" style="margin-bottom:12px"><button class="act primary" id="btn-copy-prompt">複製指令全文</button></div>
+    <div class="panel"><div class="panel-bd"><pre class="plan" id="prompt-box" style="margin:0;font-family:var(--f)"></pre></div></div></div>
+  <div class="block"><h2><span class="tag">語料</span>公開華語學習者語音語料庫</h2>
+    <p>查閱於 2026 年 9 月。注意每一份的<strong>說話人數</strong>——n 很小的語料庫不能用來推論「某某母語的學習者會……」。</p>
+    <div id="corpora"></div></div>
+  <div class="block"><h2><span class="tag">評分</span>評分要點</h2>
+    <div class="tscroll"><table><thead><tr><th>項目</th><th class="mono">配分</th><th>說明</th></tr></thead>
+      <tbody id="rubric"></tbody></table></div></div>
+</section>
+
+<!-- ═══ 02 ═══ -->
+<section role="tabpanel" id="p-bench" aria-labelledby="tab-bench">
+  <div class="note warn" style="margin-bottom:22px">
+    <strong>這一頁的數字是預測，不是實測。</strong>「預測強度」只有強／中／弱／優勢四級，是排優先序用的<strong>序位</strong>，
+    不是出現率。要看到真正的百分比，請到第 04 頁用學生的語料算出來。詳見第 05、06 頁。</div>
+
+  <div class="block"><h2><span class="tag">熱區</span>五層面偏誤分布</h2>
+    <p>長度＝該層面列出的項目強度加總；顏色＝最高嚴重度。<strong>教學優先序看顏色，不看長度。</strong></p>
+    <div class="panel"><div class="panel-bd" id="heat"></div></div></div>
+
+  <div class="block"><h2><span class="tag">調型</span>單字調五度制比對</h2>
+    <p>虛線是目標調型，實線是預測的實現。形狀不同＝範疇問題；形狀相同但幅度小＝音域問題。兩者教法完全不同。</p>
+    <div id="tones"></div></div>
+
+  <div class="block"><h2><span class="tag">記錄</span>偏誤記錄表</h2>
+    <p>證據欄：甲＝有該母語×華語的直接實證；乙＝有實證但對象不同或只支持一半；丙＝只有音系推論；丁＝與現有實證不符。</p>
+    <div class="tscroll"><table>
+      <thead><tr><th>面向</th><th>目標</th><th>預期實現</th><th>例子</th><th class="mono">預測強度</th>
+        <th class="mono">嚴重度</th><th>偏誤來源</th><th class="mono">證據</th></tr></thead>
+      <tbody id="err-rows"></tbody></table></div></div>
+
+  <div class="block"><h2><span class="tag">摘要</span>語音檔案摘要</h2>
+    <div class="panel"><div class="panel-bd" id="summary"></div></div></div>
+</section>
+
+<!-- ═══ 03 ═══ -->
+<section role="tabpanel" id="p-plan" aria-labelledby="tab-plan">
+  <p class="lede">選一項主要教學目標，論證為什麼選它、為什麼不選其他，然後產生六區塊糾音方案。</p>
+  <div class="block"><h2><span class="tag">選定</span>主要教學目標</h2>
+    <div class="panel"><div class="panel-bd">
+      <div class="formgrid g3">
+        <div><label class="fld" for="w-target">偏誤項</label><select class="inp" id="w-target"></select></div>
+        <div><label class="fld" for="w-level">程度</label><select class="inp" id="w-level">
+          <option>初級</option><option selected>中級</option><option>中高級</option></select></div>
+        <div><label class="fld" for="w-time">教學時間</label><select class="inp" id="w-time">
+          <option>單次 20 分鐘</option><option selected>單次 50 分鐘</option><option>兩週分散練習</option></select></div>
+      </div>
+      <div style="margin-top:12px"><label class="fld" for="w-why">四個指標的論證，以及為何不選其他</label>
+        <textarea id="w-why" rows="3" placeholder="① 出現情形 ② 是否造成辨義失誤 ③ 短期內能不能改變 ④ 這個程度該不該處理。並寫出「我們不選 X，因為……」"></textarea></div>
+      <div id="target-ev" style="margin-top:12px"></div>
+    </div></div></div>
+  <div class="block"><h2><span class="tag">方案</span>六區塊糾音方案</h2>
+    <div class="rowbtns" style="margin-bottom:12px">
+      <button class="act primary" id="btn-build">產生方案</button>
+      <button class="act" id="btn-copy-plan">複製</button></div>
+    <div class="panel"><div class="panel-bd"><div class="plan" id="plan-out"></div></div></div></div>
+</section>
+
+<!-- ═══ 04 ═══ -->
+<section role="tabpanel" id="p-cmp" aria-labelledby="tab-cmp">
+  <p class="lede">把左邊那些<strong>預測</strong>，跟學生在聽問查教工作台標出來的<strong>觀察</strong>放在一起。
+    這是整個單元唯一會出現真實百分比的地方。</p>
+
+  <div class="block"><h2><span class="tag">範圍</span>要比對哪個母語</h2>
+    <div class="panel"><div class="panel-bd">
+      <div class="formgrid g2">
+        <div><label class="fld" for="cmp-l1">母語</label><select class="inp" id="cmp-l1"></select></div>
+        <div style="display:flex;align-items:end;gap:8px">
+          <button class="act" id="btn-cmp">抓取學生資料並比對</button></div>
+      </div>
+      <p class="muted mini" id="cmp-meta"></p>
+    </div></div></div>
+
+  <div class="block"><h2><span class="tag">比對</span>預測 vs 觀察</h2>
+    <div class="panel"><div class="panel-bd" id="cmp-out"><p class="muted">按上面的按鈕開始。</p></div></div>
+    <div class="note" style="margin-top:14px" id="cmp-agree"></div></div>
+
+  <div class="block"><h2><span class="tag">清單</span>落空與預測之外</h2>
+    <p>這兩欄是報告裡最值得寫的部分。</p>
+    <div class="formgrid g2" id="cmp-lists"></div></div>
+
+  <div class="block"><h2><span class="tag">基準</span>文獻基準線</h2>
+    <p>下面這些是真實研究報告出來的數字，可以拿來跟本班的觀察比。引用時請引原文獻，不要引本工作台。</p>
+    <div class="tscroll"><table><thead><tr><th>現象</th><th class="mono">數值</th><th>母語範圍</th><th>出處</th></tr></thead>
+      <tbody id="baseline-rows"></tbody></table></div></div>
+</section>
+
+<!-- ═══ 05 ═══ -->
+<section role="tabpanel" id="p-manual" aria-labelledby="tab-manual">
+  <div class="prose" id="manual"></div>
+</section>
+
+<!-- ═══ 06 ═══ -->
+<section role="tabpanel" id="p-ev" aria-labelledby="tab-ev">
+  <div class="prose" id="evidence"></div>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  <p>示範學習者的偏誤項目依各母語音系與華語音系的對比分析整理，為教學用構擬示例，非取自特定語料庫的實測數據；預測強度為序位，不是出現率。正式作業中的每一條記錄都必須標明語料出處。</p>
+  <p>語料庫資訊與文獻查核於 2026 年 9 月。</p>
+</div></footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="config.js"></script>
+<script src="assets/md.js"></script>
+<script src="assets/data.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/compare.js"></script>
+<script src="assets/viz.js"></script>
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s);},
+    $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+var esc=MD.esc;
+var D=null, lid=0, lastCompare=null;
+
+var tT; function toast(m){var t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(tT);tT=setTimeout(function(){t.hidden=true;},2400);}
+function copyText(txt,label){
+  var ok=function(){toast((label||"內容")+"已複製");};
+  var fb=function(){var ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";
+    document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok();}catch(e){toast("請手動選取複製");}document.body.removeChild(ta);};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,fb);else fb();
+}
+var L=function(){return D.learners[lid];};
+
+$$("nav.rail button").forEach(function(b){b.addEventListener("click",function(){
+  $$("nav.rail button").forEach(function(o){o.setAttribute("aria-selected",String(o===b));});
+  $$("section[role=tabpanel]").forEach(function(p){p.classList.toggle("on",p.id===b.getAttribute("aria-controls"));});
+  window.scrollTo({top:0,behavior:"smooth"});
+});});
+
+/* ═══ 01 ═══ */
+function renderBrief(){
+  $("#prompt-box").textContent=D.promptText;
+  $("#corpora").innerHTML='<div class="steps">'+D.corpora.map(function(c){
+    return '<div class="stepc"><div class="no" style="background:'+(c.best?"var(--teal)":"var(--indigo)")+'">'+
+      (c.best?"★":"·")+'</div><div><h4>'+(c.u?'<a href="'+esc(c.u)+'" target="_blank" rel="noopener">'+esc(c.n)+"</a>":esc(c.n))+"</h4>"+
+      "<p><strong>內容：</strong>"+MD.inline(c.c)+"</p>"+
+      "<p><strong>標註：</strong>"+MD.inline(c.a)+"</p>"+
+      "<p><strong>取得：</strong>"+MD.inline(c.g)+"</p>"+
+      "<p><strong>適用：</strong>"+MD.inline(c.f)+"</p>"+
+      (c.caveat?'<p style="color:var(--crimson)"><strong>但書：</strong>'+MD.inline(c.caveat)+"</p>":"")+
+      "</div></div>";}).join("")+"</div>";
+  $("#rubric").innerHTML=D.rubricIndex.map(function(r){
+    return "<tr><td><strong>"+esc(r["項目"])+"</strong></td><td class=\"mono\">"+esc(r["配分"])+
+      "</td><td>"+esc(r["說明"])+"</td></tr>";}).join("");
+}
+$("#btn-copy-prompt").addEventListener("click",function(){copyText(D.promptText,"指令全文");});
+
+/* ═══ 02 ═══ */
+function renderLearner(){
+  var l=L();
+  $("#sel-learner").innerHTML=D.learners.map(function(x,i){
+    return '<option value="'+i+'"'+(i===lid?" selected":"")+">"+esc(x.name)+"　"+esc(x.l1)+"</option>";}).join("");
+  $("#l-meta").textContent=l.lvl+"　·　"+l.dur+"　·　"+l.src;
+
+  $("#heat").innerHTML=HPLViz.heatBars(l,D.levels);
+  $("#tones").innerHTML=HPLViz.toneGrid(l);
+  $("#err-rows").innerHTML=l.e.map(function(e){
+    return "<tr><td>"+esc(e.lv)+"</td><td>"+MD.inline(e.target)+"</td><td>"+MD.inline(e.realized)+
+      "</td><td>"+MD.inline(e.example)+'</td><td class="mono">'+esc(e.strength)+
+      '</td><td><span class="chip '+e.sevclass+'">'+esc(e.sev)+"</span></td><td>"+MD.inline(e.cause)+
+      '</td><td class="mono"><span class="ev '+e.evclass+'">'+esc(e.ev)+"</span></td></tr>";}).join("");
+
+  var top=l.e.slice().sort(function(a,b){return (b.sevw*10+b.w)-(a.sevw*10+a.w);}).slice(0,5);
+  var strong=l.e.filter(function(e){return e.sev==="優勢";});
+  var high=l.e.filter(function(e){return e.sev==="高";});
+  var weak=l.e.filter(function(e){return e.ev==="丙"||e.ev==="丁";});
+  $("#summary").innerHTML=
+    "<h4>基本資料</h4><p>"+esc(l.l1)+" 母語　·　"+esc(l.lvl)+"　·　"+esc(l.dur)+"<br>"+
+    '<span class="muted">可驗證來源：'+esc(l.src)+"</span></p>"+
+    "<h4 style=\"margin-top:16px\">預測的優先序前五項</h4><ol>"+top.map(function(e){
+      return "<li>"+MD.inline(e.target)+'　<span class="chip '+e.sevclass+'">'+esc(e.sev)+
+        '</span> <span class="ev '+e.evclass+'">'+esc(e.ev)+"</span></li>";}).join("")+"</ol>"+
+    "<h4 style=\"margin-top:16px\">優勢項（教學的支點）</h4>"+
+    (strong.length?"<ul>"+strong.map(function(e){return "<li>"+MD.inline(e.target)+"——"+MD.inline(e.cause)+"</li>";}).join("")+"</ul>"
+      :'<p class="muted">這份預測沒有列出優勢項。真實語料裡幾乎一定有，請自己找出來。</p>')+
+    "<h4 style=\"margin-top:16px\">可懂度影響評估</h4>"+
+    "<p>預測會造成辨義失誤（A 類）的有 <strong>"+high.length+"</strong> 項："+
+    (high.length?high.map(function(e){return MD.inline(e.target);}).join("、"):"無")+"。</p>"+
+    '<div class="note warn" style="margin-top:12px"><strong>證據提醒：</strong>這 '+l.e.length+
+    " 項裡有 <strong>"+weak.length+"</strong> 項只有音系推論、或與現有實證不符（證據欄標丙或丁）。"+
+    "這些項目在報告裡必須寫成假設，不能寫成結論。逐條理由見第 06 頁。</div>";
+
+  $("#w-target").innerHTML=l.e.map(function(e,i){
+    return '<option value="'+i+'">'+esc(e.lv)+" · "+esc(e.target)+"</option>";}).join("");
+  renderTargetEv();
+}
+$("#sel-learner").addEventListener("change",function(){lid=Number($("#sel-learner").value);renderLearner();});
+
+/* ═══ 03 ═══ */
+function renderTargetEv(){
+  var e=L().e[Number($("#w-target").value)||0];
+  if(!e){$("#target-ev").innerHTML="";return;}
+  var cls=e.ev==="甲"?"good":e.ev==="丁"?"stop":"warn";
+  var msg={"甲":"有針對這個母語×華語的直接實證研究支持。可以引用原文獻，但仍要標明本班語料的觀察是另一回事。",
+    "乙":"有實證支持，但對象是其他母語、或只支持一半。引用時要講明範圍。",
+    "丙":"只有音系對比推論，查不到直接實證。<strong>報告裡必須寫成假設。</strong>本班語料正好可以拿來檢驗它。",
+    "丁":"與現有實證不符，或證據互相矛盾。<strong>不要直接沿用這個說法。</strong>"}[e.ev]||"未標示證據等級。";
+  $("#target-ev").innerHTML='<div class="note '+cls+'"><strong>證據等級 '+esc(e.ev||"—")+"：</strong>"+msg+
+    "<br><span class=\"muted\">偏誤來源："+MD.inline(e.cause)+"</span></div>";
+}
+$("#w-target").addEventListener("change",renderTargetEv);
+
+$("#btn-build").addEventListener("click",function(){
+  var l=L(), e=l.e[Number($("#w-target").value)||0];
+  if(!e){toast("請先選定偏誤項");return;}
+  var kb=D.kb[(D.keyName&&D.keyName[e.key])||""]||null;
+  if(!kb){
+    Object.keys(D.kb).forEach(function(tag){
+      if(!kb&&D.tagKey[tag]===e.key)kb=D.kb[tag];
+    });
+  }
+  kb=kb||D.kbDefault;
+  $("#plan-out").textContent=
+"糾音方案｜"+l.name+"（"+l.l1+"）\n"+
+"教學目標："+e.lv+" · "+e.target+"\n"+
+"預測強度："+e.strength+"　嚴重度："+e.sev+"　證據等級："+(e.ev||"—")+"\n"+
+"程度："+$("#w-level").value+"　時間："+$("#w-time").value+"\n\n"+
+"【選擇理由】\n"+($("#w-why").value.trim()||"（未填——這一欄是評分重點，不要留空）")+"\n\n"+
+"① 診斷說明\n"+kb.d+"\n\n"+
+"② 感知訓練\n先確認學習者聽不聽得出差別。用下列最小對立對做 AX／ABX 判斷。\n"+
+(kb.pairs.length?kb.pairs.map(function(p){return "　· "+p;}).join("\n"):"　（請自行補上最小對立對）")+
+"\n\n先測再決定：如果感知正確率已經在八成以上，直接跳到產出，不要再花時間練聽辨。\n\n"+
+"③ 產出訓練\n"+kb.p+"\n順序：單音節 → 雙音節 → 詞組 → 語流。每一級都要錄音回放。\n\n"+
+"④ 回饋設計\n教師即時回饋：指出具體的動作，不要只說「不對」。\n"+
+"AI 可提供：練習語料生成、重複操練、進度紀錄。\nAI 的限制：聲學回饋須人工複核；無法判斷體感；無法處理動機。\n\n"+
+"⑤ 人機分工\n人：診斷確認、發音部位的體感引導、動機與情意支持、語用與文化判斷。\n"+
+"AI：大量重複操練、即時聲學回饋（須複核）、練習語料生成、進度紀錄。\n\n"+
+"⑥ 評量指標\n．最小對立對辨別正確率：___% → ___%\n．單音節產出正確率（兩位獨立評分者，報告一致情形）\n"+
+"．詞組層次的保持率\n．聽寫測試：請未聽過該錄音的人寫下來，比對正確字數\n\n"+
+"【本方案的證據限制】\n"+
+(e.ev==="甲"?"此項有直接實證支持，仍須以本班語料驗證出現情形。"
+ :e.ev==="丁"?"此項與現有實證不符，方案應同時設計檢驗步驟，不要預設它成立。"
+ :"此項目前只有音系對比推論，沒有直接實證。請在試教時同步蒐集資料。")+"\n";
+  toast("已產生");
+});
+$("#btn-copy-plan").addEventListener("click",function(){
+  var t=$("#plan-out").textContent.trim();
+  if(!t){toast("請先產生方案");return;}copyText(t,"糾音方案");});
+
+/* ═══ 04 ═══ */
+function renderBaselines(){
+  var ks=Object.keys(D.baseline);
+  $("#baseline-rows").innerHTML=ks.length?ks.map(function(k){
+    var b=D.baseline[k];
+    return "<tr><td>"+esc(D.keyName[k]||k)+'</td><td class="mono">'+(b.v*100).toFixed(0)+"%</td><td>"+
+      esc(b.scope)+"</td><td>"+MD.inline(b.cite)+"</td></tr>";}).join("")
+    :'<tr><td colspan="4" class="muted">content/tagmap.md 的「外部基準線」是空的。</td></tr>';
+}
+function runCompare(){
+  var l1=$("#cmp-l1").value;
+  $("#cmp-out").innerHTML='<p class="muted">整理中…</p>';
+  HPLStore.classSummary().then(function(cd){
+    var flat=HPLCompare.flatten(cd,D).filter(function(r){return (r.l1||"")===l1;});
+    var agg=HPLCompare.aggregate(flat,D);
+    var res=HPLCompare.compare(D,agg,l1);
+    lastCompare=res;
+
+    $("#cmp-meta").innerHTML="對照對象："+esc(res.learner?(res.learner.name+"（"+res.learner.l1+"）"):"（沒有這個母語的預測檔案）")+
+      "　·　觀察筆數 "+res.records+"　·　說話人 "+res.speakerCount+" 位"+
+      (cd.local?"　·　<strong>離線模式：只看得到這台電腦存過的組別。要看到全班，請在 config.js 填 backendUrl。</strong>":"")+
+      (res.hasDenominator?("　·　"+Math.round(res.denomShare*100)+"% 的記錄有分母"):"　·　沒有記錄填分母，只能用覆蓋率");
+
+    $("#cmp-out").innerHTML=res.rows.length?HPLViz.compareBars(res)
+      :'<p class="muted">這個母語還沒有可比對的學生資料。</p>';
+
+    var a=res.agreement;
+    $("#cmp-agree").innerHTML="<strong>排序一致度：</strong>"+
+      (a.rho==null?("尚未計算——"+esc(a.why)+"。"):
+        ("Spearman ρ = "+a.rho.toFixed(2)+"（n = "+a.n+"）。"+
+         (a.rho>=.6?"預測與觀察的排序大致一致。":a.rho>=.3?"只有中等程度的一致。":a.rho>=0?"幾乎沒有一致性。":
+          "呈現反向關係——預測排在前面的，實際上反而少見。")))+
+      "<br><span class=\"muted\">這個數字只說明<strong>排序</strong>像不像，不說明預測「對不對」。樣本是本班語料。</span>";
+
+    if(!res.records){
+      $("#cmp-lists").innerHTML='<div class="note warn" style="grid-column:1/-1">'+
+        "<strong>還沒有學生標註。</strong>在有資料之前不會列出落空與預測之外——"+
+        "那兩欄要有觀察才有意義。</div>";
+      return;
+    }
+    var miss=res.rows.filter(function(r){return r.verdict==="miss";});
+    var extra=res.rows.filter(function(r){return r.verdict==="extra";});
+    $("#cmp-lists").innerHTML=
+      '<div class="panel"><div class="panel-hd"><h3>預測落空（'+miss.length+"）</h3></div><div class=\"panel-bd\">"+
+      (miss.length?"<ul>"+miss.map(function(r){return "<li>"+esc(r.name)+"　預測 "+esc(r.pred||"—")+
+        '　<span class="ev '+r.evclass+'">'+esc(r.ev||"?")+"</span></li>";}).join("")+"</ul>"
+        :'<p class="muted">沒有落空的預測。</p>')+
+      '<p class="mini muted">先確認不是漏標。確認之後，這就是對比分析強版本已知的失敗模式，本身是發現。</p></div></div>'+
+      '<div class="panel"><div class="panel-hd"><h3>預測之外（'+extra.length+"）</h3></div><div class=\"panel-bd\">"+
+      (extra.length?"<ul>"+extra.map(function(r){return "<li>"+esc(r.name)+"　觀察 "+
+        (r.rate!=null?(r.rate*100).toFixed(0)+"%":r.speakerCount+"/"+res.speakerCount+" 人")+"</li>";}).join("")+"</ul>"
+        :'<p class="muted">沒有預測之外的觀察。</p>')+
+      '<p class="mini muted">最有價值的一欄。回頭查是不是教學誘發，或是目的語規則過度泛化。</p></div></div>';
+  }).catch(function(e){
+    $("#cmp-out").innerHTML='<p class="muted">抓不到資料：'+esc(e.message||e)+"</p>";
+  });
+}
+$("#btn-cmp").addEventListener("click",runCompare);
+
+/* ═══ 連線 ═══ */
+function renderConn(){
+  var s=HPLStore.state, el=$("#conn"), t=$("#conn-t");
+  el.className="conn"+(s.mode==="local"?"":(s.online?" on":" off"));
+  t.textContent=s.mode==="local"?"離線：只讀得到本機資料"
+    :s.mode==="claude"?"已連上共享資料庫":(s.online?"已連上試算表":"連線中…");
+}
+
+/* ═══ 啟動 ═══ */
+document.body.insertAdjacentHTML("afterbegin",
+  '<div id="boot" style="position:fixed;inset:0;display:grid;place-items:center;background:var(--paper);z-index:99">'+
+  '<p class="muted">載入教材內容…</p></div>');
+
+HPLData.load().then(function(data){
+  D=data;
+  renderBrief(); renderLearner(); renderBaselines();
+  $("#manual").innerHTML=D.manualHtml;
+  $("#evidence").innerHTML=D.evidenceHtml;
+  $("#cmp-l1").innerHTML=D.l1s.map(function(x){return "<option>"+esc(x)+"</option>";}).join("");
+  return HPLStore.init();
+}).then(function(){
+  HPLStore.on(renderConn); renderConn();
+  var b=document.getElementById("boot"); if(b)b.remove();
+}).catch(function(e){
+  var b=document.getElementById("boot");
+  if(b)b.innerHTML='<div class="wrap" style="max-width:640px"><div class="note stop">'+
+    "<strong>載不進教材內容。</strong><br>"+esc(e.message||e)+
+    "<br><br>最常見的原因：直接用 <code>file://</code> 開這個檔案。瀏覽器不允許這樣讀 content/ 裡的 .md。"+
+    "<br><br>請改用任一靜態伺服器：<br><code>python3 -m http.server 8000</code><br>然後開 http://localhost:8000/v2/workbench.html</div></div>";
+});
+})();
+</script>
+</body>
+</html>
