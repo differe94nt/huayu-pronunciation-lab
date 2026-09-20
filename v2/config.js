@@ -63,8 +63,24 @@ window.HPL_CONFIG = {
      false = 只記次數。比對面板會改用「幾位說話人出現過」當指標。   */
   requireDenominator: true,
 
-  /* ── 5. 規律成立的門檻 ──────────────────────────────────────  */
-  ruleThreshold: { speakers: 2, total: 3 },
+  /* ── 5. 規律成立的門檻與繳交目標 ─────────────────────────────
+     ruleThreshold：一個現象要「幾位說話人出現過、合計幾次」才算規律。
+       只有成立的規律才會拿到編號 R1、R2…，
+       而步驟二的提示詞、步驟三的查證、步驟四的教學目標
+       三個選單都只列得出成立的規律。門檻太高 → 後面三步都選不到東西。
+
+     targets：繳交前檢核與分頁上小圓點的達標數量。
+
+     ── 三小時、聽 3 份錄音（原設定）──
+        ruleThreshold: { speakers: 2, total: 3 },
+        targets: { records: 6, ai: 3, src: 2, why: 40 },
+
+     ── 一小時、只聽 2 份錄音 ──
+        ruleThreshold: { speakers: 2, total: 2 },   // 兩位各出現一次就算
+        targets: { records: 4, ai: 1, src: 1, why: 40 },
+                                                                  */
+  ruleThreshold: { speakers: 2, total: 2 },
+  targets: { records: 4, ai: 1, src: 1, why: 40 },
 
   /* ── 6. 內容檔案放哪裡 ──────────────────────────────────────  */
   contentBase: "content/"

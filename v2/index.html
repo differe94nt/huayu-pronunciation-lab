@@ -110,8 +110,7 @@
   <div class="block"><h2><span class="tag">歸納</span>重現矩陣</h2>
     <p id="mtx-sub"></p>
     <div class="tscroll"><table class="mtx">
-      <thead><tr><th>現象</th><th>面向</th><th class="mono">S1</th><th class="mono">S2</th><th class="mono">S3</th>
-        <th class="mono">合計</th><th class="mono">分母</th><th class="mono">出現率</th><th>判斷</th><th>編號</th></tr></thead>
+      <thead><tr id="mtx-head"></tr></thead>
       <tbody id="mtx-rows"></tbody></table></div>
     <div class="note warn" style="margin-top:14px" id="mtx-warn"></div></div>
 </section>
@@ -314,6 +313,13 @@ function copyText(txt,label){
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,fb);else fb();
 }
 var G=function(){return D.groups.filter(function(g){return g.id===gid;})[0];};
+/* 本組實際有幾份錄音 → ["S1","S2",…]，只聽 2 份時矩陣就不會多一欄 */
+function slots(){var g=G();return (g?g.f:[]).map(function(_,i){return "S"+(i+1);});}
+/* 繳交目標，config.js 沒設就用預設 */
+function TARGETS(){
+  var t=(CFG.targets)||{};
+  return {records:t.records||6, ai:t.ai||3, src:t.src||2, why:t.why||40};
+}
 
 /* ═══ 分頁 ═══ */
 $$("nav.rail button").forEach(function(b){b.addEventListener("click",function(){
@@ -487,14 +493,17 @@ function matrixRows(){
   }).sort(function(a,b){return (b.isRule-a.isRule)||(b.total-a.total);});
 }
 function renderMatrix(){
-  var g=G(), rows=matrixRows(), n=0;
+  var g=G(), rows=matrixRows(), n=0, sl=slots();
+  $("#mtx-head").innerHTML="<th>現象</th><th>面向</th>"+
+    sl.map(function(s){return '<th class="mono">'+s+"</th>";}).join("")+
+    '<th class="mono">合計</th><th class="mono">分母</th><th class="mono">出現率</th><th>判斷</th><th>編號</th>';
   var th=CFG.ruleThreshold||{speakers:2,total:3};
   $("#mtx-sub").textContent="成立門檻：至少 "+th.speakers+" 位說話人出現，且合計至少 "+th.total+
     " 次。達標的會標上編號 R1、R2…，後面的步驟都用編號指涉。";
   $("#mtx-rows").innerHTML=rows.length?rows.map(function(b){
     var id=b.isRule?("R"+(++n)):"";
     b.rid=id;
-    var cells=["S1","S2","S3"].map(function(s){
+    var cells=slots().map(function(s){
       var v=b.s[s]||0;
       return '<td class="cell"><b class="'+(v?"hit":"no")+'">'+(v||"·")+"</b></td>";}).join("");
     return "<tr"+(b.isRule?' class="isrule"':"")+"><td>"+esc(b.tag)+"</td><td>"+esc(b.lv)+"</td>"+cells+
@@ -502,7 +511,7 @@ function renderMatrix(){
       '<td class="cell mono">'+(b.rate!=null?(b.rate*100).toFixed(0)+"%":"—")+"</td>"+
       '<td><span class="chip '+(b.verdict==="?"?"n":esc(b.verdict))+'">'+esc(b.verdict)+"</span></td>"+
       '<td class="mono">'+esc(id||"—")+"</td></tr>";}).join("")
-    :'<tr><td colspan="10" class="muted">還沒有資料。先到上面新增觀察。</td></tr>';
+    :'<tr><td colspan="'+(sl.length+7)+'" class="muted">還沒有資料。先到上面新增觀察。</td></tr>';
   var noDenom=rows.filter(function(b){return b.isRule&&!b.denom;}).length;
   $("#mtx-warn").innerHTML=rows.length
     ? "<strong>"+n+" 條達標。</strong>"+
@@ -605,7 +614,7 @@ function renderAlign(){
   var ais=HPLStore.get("ai").filter(function(a){return t&&a.rule===t.rid;});
   var cs=[
     [!!t,"已從成立的規律中選定教學目標"],
-    [why.length>40,"選擇理由已依四個指標論證（目前 "+why.length+" 字）"],
+    [why.length>TARGETS().why,"選擇理由已依四個指標論證（目前 "+why.length+" 字）"],
     [/不選|沒有選|未選/.test(why),"理由中明確寫出「我們不選 Rx，因為……」"],
     [srcs.length>0,"這條規律有查證紀錄（"+srcs.length+" 筆）"],
     [strong.length>0,"其中至少一筆是 L1 或 L2 層級"],
@@ -693,26 +702,27 @@ $("#cmp-l1").addEventListener("change",refreshCompare);
 /* ═══ 進度點 ═══ */
 function updateDots(){
   var why=$("#t-why").value.trim();
-  var d={1:recs().length>=6,2:HPLStore.get("ai").length>=3,3:HPLStore.get("src").length>=2,
-    4:!!pickedRule("#t-rule")&&why.length>40};
+  var T=TARGETS();
+  var d={1:recs().length>=T.records,2:HPLStore.get("ai").length>=T.ai,3:HPLStore.get("src").length>=T.src,
+    4:!!pickedRule("#t-rule")&&why.length>T.why};
   $$("[data-dot]").forEach(function(el){el.classList.toggle("done",!!d[el.dataset.dot]);});
   renderSubmitCheck();
 }
 
 /* ═══ 繳交檢核 ═══ */
 function renderSubmitCheck(){
-  var m=HPLStore.meta(), rs=rules(), t=pickedRule("#t-rule");
+  var m=HPLStore.meta(), rs=rules(), t=pickedRule("#t-rule"), T=TARGETS();
   var withDenom=recs().filter(function(r){return r.denom;}).length;
   var cs=[
-    [recs().length>=6,"至少 6 筆觀察記錄（目前 "+recs().length+" 筆）"],
+    [recs().length>=T.records,"至少 "+T.records+" 筆觀察記錄（目前 "+recs().length+" 筆）"],
     [!!m.calTotal,"已記錄步驟〇的聽力校準結果"],
     [rs.length>=1,"至少 1 條規律成立（目前 "+rs.length+" 條）"],
     [!CFG.requireDenominator||withDenom>0,"至少有記錄分母的觀察（目前 "+withDenom+" 筆）"],
-    [HPLStore.get("ai").length>=3,"至少 3 則 AI 協作紀錄（目前 "+HPLStore.get("ai").length+" 則）"],
-    [HPLStore.get("src").length>=2,"至少 2 筆查證紀錄（目前 "+HPLStore.get("src").length+" 筆）"],
+    [HPLStore.get("ai").length>=T.ai,"至少 "+T.ai+" 則 AI 協作紀錄（目前 "+HPLStore.get("ai").length+" 則）"],
+    [HPLStore.get("src").length>=T.src,"至少 "+T.src+" 筆查證紀錄（目前 "+HPLStore.get("src").length+" 筆）"],
     [HPLStore.get("src").filter(function(s){return /L1|L2/.test(s.level);}).length>0,"其中至少 1 筆是 L1 或 L2 層級"],
     [!!t,"已選定教學目標並綁定規律編號"],
-    [$("#t-why").value.trim().length>40,"教學目標的選擇理由已論證"],
+    [$("#t-why").value.trim().length>TARGETS().why,"教學目標的選擇理由已論證"],
     [!!m.ttFb,"已完成五分鐘試教並記錄回饋"]
   ];
   var bad=cs.filter(function(c){return !c[0];}).length;
@@ -735,10 +745,21 @@ function metaFromForm(){
   D.roles.forEach(function(r,i){var el=$("#role-"+i);if(el)o["role"+i]=el.value;});
   return o;
 }
+/* 同一組有好幾個人同時開著頁面時，輪詢回來的資料不能蓋掉
+   別人正在打字的欄位。碰過的欄位標記為 dirty，按下儲存才解除。 */
+var dirty={};
+function markDirty(el){if(el&&el.id)dirty[el.id]=true;}
+function clearDirty(){dirty={};}
+function setIfClean(sel,val){
+  var el=$(sel); if(!el)return;
+  if(dirty[el.id])return;              /* 這個人正在改，別動 */
+  if(document.activeElement===el)return;
+  if(val!=null)el.value=val;
+}
 function metaToForm(){
   var m=HPLStore.meta()||{};
-  META_FIELDS.forEach(function(p){if(m[p[1]]!=null)$(p[0]).value=m[p[1]];});
-  D.roles.forEach(function(r,i){var el=$("#role-"+i);if(el&&m["role"+i]!=null)el.value=m["role"+i];});
+  META_FIELDS.forEach(function(p){setIfClean(p[0],m[p[1]]);});
+  D.roles.forEach(function(r,i){setIfClean("#role-"+i,m["role"+i]);});
   renderCalRate();
 }
 function renderCalRate(){
@@ -747,7 +768,9 @@ function renderCalRate(){
 }
 ["#cal-agree","#cal-total"].forEach(function(s){$(s).addEventListener("input",renderCalRate);});
 ["#btn-save-roles","#btn-save-cal","#btn-save-target","#btn-save-tt"].forEach(function(s){
-  $(s).addEventListener("click",function(){HPLStore.setMeta(metaFromForm()).then(function(){toast("已儲存");});});});
+  $(s).addEventListener("click",function(){
+    HPLStore.setMeta(metaFromForm()).then(function(){clearDirty();toast("已儲存");});});});
+document.addEventListener("input",function(e){markDirty(e.target);},true);
 
 /* ═══ 匯出 ═══ */
 function buildExport(){
