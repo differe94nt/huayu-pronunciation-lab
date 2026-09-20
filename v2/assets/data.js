@@ -13,6 +13,26 @@
     for (var i = 0; i < doc.sections.length; i++) if (doc.sections[i].heading === name) return doc.sections[i];
     return null;
   };
+  /* 標題寬鬆比對：先找完全一樣的，找不到就找「包含」的。
+     老師常會把「分工建議」改寫成「參考分工建議」之類，
+     完全比對會整塊資料悄悄消失，什麼錯誤也不會報。 */
+  var secLike = function (doc, name) {
+    var hit = sec(doc, name);
+    if (hit) return hit;
+    for (var i = 0; i < doc.sections.length; i++) {
+      var h = doc.sections[i].heading || "";
+      if (h.indexOf(name) >= 0 || (name.length > 2 && name.indexOf(h) >= 0 && h.length > 2)) return doc.sections[i];
+    }
+    return null;
+  };
+  /* 標題含「提醒」或「重要」的區塊 → 置頂橫幅 */
+  var secBanner = function (doc) {
+    for (var i = 0; i < doc.sections.length; i++) {
+      var h = doc.sections[i].heading || "";
+      if (/提醒|重要/.test(h)) return doc.sections[i];
+    }
+    return null;
+  };
   var firstTable = function (s) { return s && s.tables[0] ? s.tables[0] : null; };
   var objs = function (s) { return MD.rowsToObjects(firstTable(s)); };
 
@@ -106,13 +126,17 @@
 
     /* ── 課程結構 ── */
     var c = files.course.doc;
-    D.steps = objs(sec(c, "四個步驟"));
-    D.triage = objs(sec(c, "三分類"));
-    D.roles = objs(sec(c, "分工建議")) ;
-    if (!D.roles.length) D.roles = objs(sec(c, "六人角色"));   /* 舊檔名相容 */
-    D.advice = objs(sec(c, "對課程邏輯的建議"));
-    D.rubricIndex = objs(sec(c, "評分規準"));
-    D.srcLevels = objs(sec(c, "來源層級"));
+    D.steps = objs(secLike(c, "四個步驟"));
+    D.triage = objs(secLike(c, "三分類"));
+    D.roles = objs(secLike(c, "分工建議"));
+    if (!D.roles.length) D.roles = objs(secLike(c, "六人角色"));   /* 舊標題相容 */
+    D.advice = objs(secLike(c, "對課程邏輯的建議"));
+    D.rubricIndex = objs(secLike(c, "評分規準"));
+    D.srcLevels = objs(secLike(c, "來源層級"));
+
+    /* 置頂提醒：標題含「提醒」或「重要」的區塊，會顯示在每個分頁最上面 */
+    var bn = secBanner(c);
+    D.banner = bn ? { title: bn.heading, paras: bn.paras.concat(bn.notes), list: bn.list } : null;
 
     /* ── 示範學習者 ── */
     D.learners = files.learners.doc.sections.map(function (s, i) {

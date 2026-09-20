@@ -15,11 +15,11 @@
   <div class="principle">口音不等於錯誤——先分 A／B／C，再決定教什麼</div>
   <nav class="rail" role="tablist">
     <button role="tab" id="tab-o" aria-controls="p-o" aria-selected="true">總覽與分工</button>
-    <button role="tab" id="tab-ex" aria-controls="p-ex" aria-selected="false">可能出現的偏誤</button>
-    <button role="tab" id="tab-1" aria-controls="p-1" aria-selected="false"><span class="n">一</span>聽<span class="dot" data-dot="1"></span></button>
-    <button role="tab" id="tab-2" aria-controls="p-2" aria-selected="false"><span class="n">二</span>問<span class="dot" data-dot="2"></span></button>
-    <button role="tab" id="tab-3" aria-controls="p-3" aria-selected="false"><span class="n">三</span>查<span class="dot" data-dot="3"></span></button>
-    <button role="tab" id="tab-4" aria-controls="p-4" aria-selected="false"><span class="n">四</span>教<span class="dot" data-dot="4"></span></button>
+    <button role="tab" id="tab-ex" aria-controls="p-ex" aria-selected="false">觀察提示</button>
+    <button role="tab" id="tab-1" aria-controls="p-1" aria-selected="false"><span class="n">一</span>聽<span class="dot" data-dot="1" title="綠點＝這一步已達標"></span></button>
+    <button role="tab" id="tab-2" aria-controls="p-2" aria-selected="false"><span class="n">二</span>問<span class="dot" data-dot="2" title="綠點＝這一步已達標"></span></button>
+    <button role="tab" id="tab-3" aria-controls="p-3" aria-selected="false"><span class="n">三</span>查<span class="dot" data-dot="3" title="綠點＝這一步已達標"></span></button>
+    <button role="tab" id="tab-4" aria-controls="p-4" aria-selected="false"><span class="n">四</span>教<span class="dot" data-dot="4" title="綠點＝這一步已達標"></span></button>
     <button role="tab" id="tab-c" aria-controls="p-c" aria-selected="false">實證比對</button>
     <button role="tab" id="tab-x" aria-controls="p-x" aria-selected="false">繳交與匯出</button>
   </nav>
@@ -37,12 +37,15 @@
   <span class="conn" id="conn"><i></i><span id="conn-t">載入中</span></span>
 </div></div>
 
+<div class="wrap"><div id="banner"></div></div>
+
 <main class="wrap">
 
 <!-- ═══ 總覽 ═══ -->
 <section role="tabpanel" id="p-o" aria-labelledby="tab-o" class="on">
   <p class="lede">先讀這一頁再開始。四個步驟、三個分類、六個角色——三件事講定了，後面才不會各做各的。</p>
-  <div class="block"><h2><span class="tag">流程</span>四個步驟</h2><div class="steps" id="steps"></div></div>
+  <div class="block"><h2><span class="tag">流程</span>四個步驟</h2><div class="steps" id="steps"></div>
+    <p class="muted mini" id="dot-legend" style="margin-top:12px"></p></div>
   <div class="block"><h2><span class="tag">判準</span>三分類：什麼才值得教</h2>
     <p>教學目標只能從 A、B 中選；報告必須明確列出判為 C 的項目。</p>
     <div class="triage" id="triage"></div></div>
@@ -423,6 +426,16 @@ $$("nav.rail button").forEach(function(b){b.addEventListener("click",function(){
 });});
 
 /* ═══ 靜態內容 ═══ */
+function renderBanner(){
+  var b=D.banner, el=$("#banner");
+  if(!b||(!b.paras.length&&!b.list.length)){el.innerHTML="";return;}
+  el.innerHTML='<div class="note stop" style="margin-top:18px">'+
+    (b.title?"<strong>"+esc(b.title)+"</strong><br>":"")+
+    b.paras.map(function(t){return MD.inline(t);}).join("<br>")+
+    (b.list.length?"<ul style=\"margin:6px 0 0;padding-inline-start:20px\">"+
+      b.list.map(function(t){return "<li>"+MD.inline(t)+"</li>";}).join("")+"</ul>":"")+
+    "</div>";
+}
 function renderStatic(){
   $("#steps").innerHTML=D.steps.map(function(s){
     return '<div class="stepc"><div class="no">'+esc(s["步驟"])+'</div><div><h4>'+esc(s["標題"])+
@@ -938,6 +951,11 @@ function updateDots(){
   var d={1:recs().length>=T.records,2:HPLStore.get("ai").length>=T.ai,3:HPLStore.get("src").length>=T.src,
     4:!!pickedRule("#t-rule")&&why.length>T.why};
   $$("[data-dot]").forEach(function(el){el.classList.toggle("done",!!d[el.dataset.dot]);});
+  var lg=$("#dot-legend");
+  if(lg)lg.innerHTML="分頁上的小圓點：灰色＝還沒達標，綠色＝這一步的數量已經夠了。"+
+    "達標條件是——一 聽："+T.records+" 筆觀察；二 問："+T.ai+" 則 AI 紀錄；"+
+    "三 查："+T.src+" 筆查證；四 教：選好教學目標並寫滿 "+T.why+" 字的理由。"+
+    "（數量在 config.js 的 targets 調整）";
   renderSubmitCheck();
 }
 
@@ -1173,7 +1191,7 @@ document.body.insertAdjacentHTML("afterbegin",
 
 HPLData.load().then(function(data){
   D=data; gid=D.groups[0].id;
-  renderStatic(); renderLevelSelects();
+  renderStatic(); renderBanner(); renderLevelSelects();
   return HPLStore.init();
 }).then(function(){
   HPLStore.on(function(what){
