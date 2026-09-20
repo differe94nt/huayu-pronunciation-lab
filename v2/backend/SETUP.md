@@ -105,6 +105,17 @@ HTTP `206` 與 Range 支援不能單獨證明瀏覽器解碼、播放或 seek �
 `python3 -m http.server 8000`，開 `http://localhost:8000/v2/`。
 本機音檔以說話人代號命名，例如 `../audio/A-a.m4a`。
 
+> **本機預覽時「抓時間碼」會不準，這不是程式壞掉。**
+> `python3 -m http.server` 不支援 Range 請求（實測回 `HTTP/1.0 200`，沒有 `accept-ranges`），
+> 瀏覽器因此無法正常跳轉播放位置。GitHub Pages 與 Drive 都支援 Range，發布後就正常。
+> 本機要測時間碼，改用支援 Range 的伺服器，例如：
+>
+> ```bash
+> npx --yes http-server -p 8000 --cors
+> ```
+>
+> 播放與解碼本身在 `python3 -m http.server` 下沒問題（已實測 m4a 讀出正確長度）。
+
 若明確要測試無密碼的靜態 Drive 對照表，執行 `printAudioManifest`，
 把 JSON 存成 `v2/audio-manifest.json`，並設定同名 `audioManifest`。
 這個檔案只能留在本機，發布工具不會複製它。
