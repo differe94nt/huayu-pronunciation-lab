@@ -190,6 +190,7 @@
 
     /* ── 純文字頁 ── */
     D.manualHtml = files.manual.html;
+    D.referencesHtml = files.references ? files.references.html : "";
     D.evidenceHtml = files.evidence.html;
     D.promptText = (function () {
       var b = files.prompt.blocks.filter(function (x) { return x.t === "code"; });
@@ -208,7 +209,7 @@
     return D;
   }
 
-  var NEEDED = ["groups", "levels", "contrast", "kb", "course", "learners", "tagmap", "corpora", "manual", "evidence", "prompt"];
+  var NEEDED = ["groups", "levels", "contrast", "kb", "course", "learners", "tagmap", "corpora", "manual", "evidence", "prompt", "references"];
 
   global.HPLData = {
     load: function (names) {

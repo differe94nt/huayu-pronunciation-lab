@@ -99,6 +99,13 @@
     <div id="ex-tones"></div>
   </div>
 
+  <div class="block"><h2><span class="tag">出處</span>這一頁的依據是什麼</h2>
+    <p>上表「證據」欄的甲／乙／丙／丁，對應的文獻列在本頁最下方。
+      標丙或丁的，報告裡只能寫成假設。</p>
+    <div class="rowbtns"><button class="act" id="btn-refs">展開文獻清單</button></div>
+    <div id="refs" class="prose" hidden style="margin-top:16px"></div>
+  </div>
+
   <div class="block"><h2><span class="tag">標籤</span>現象標籤是什麼意思</h2>
     <p>標註時要從下拉選單挑一個「現象標籤」。標籤就是把你聽到的東西歸類，
       同一個標籤累積夠多次才會變成規律（拿到 R1、R2 編號）。</p>
@@ -590,6 +597,7 @@ function renderExamples(){
       '</span></td><td class="mono"><span class="ev '+e.evclass+'">'+esc(e.ev)+"</span></td></tr>";}).join("");
 
   $("#ex-tones").innerHTML=HPLViz.toneGrid(L);
+  $("#refs").innerHTML=D.referencesHtml||'<p class="muted">content/references.md 讀不到。</p>';
 
   /* 這組母語可能用到的標籤，對照到學生標註時的選單 */
   var keys={}; L.e.forEach(function(e){if(e.key)keys[e.key]=true;});
@@ -603,6 +611,13 @@ function renderExamples(){
       }).join("");
     }).join("")+"</tbody></table></div>";
 }
+
+$("#btn-refs").addEventListener("click",function(){
+  var el=$("#refs"), on=el.hidden;
+  el.hidden=!on;
+  this.textContent=on?"收合文獻清單":"展開文獻清單";
+  if(on)el.scrollIntoView({behavior:"smooth",block:"nearest"});
+});
 
 /* ═══ 記錄 ═══ */
 function recs(){return HPLStore.get("records");}
@@ -953,9 +968,8 @@ function updateDots(){
   $$("[data-dot]").forEach(function(el){el.classList.toggle("done",!!d[el.dataset.dot]);});
   var lg=$("#dot-legend");
   if(lg)lg.innerHTML="分頁上的小圓點：灰色＝還沒達標，綠色＝這一步的數量已經夠了。"+
-    "達標條件是——一 聽："+T.records+" 筆觀察；二 問："+T.ai+" 則 AI 紀錄；"+
-    "三 查："+T.src+" 筆查證；四 教：選好教學目標並寫滿 "+T.why+" 字的理由。"+
-    "（數量在 config.js 的 targets 調整）";
+    "達標條件是：一 聽："+T.records+" 筆觀察；二 問："+T.ai+" 則 AI 紀錄；"+
+    "三 查："+T.src+" 筆查證；四 教：選好教學目標並寫滿 "+T.why+" 字的理由。";
   renderSubmitCheck();
 }
 
