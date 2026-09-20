@@ -22,7 +22,6 @@
     <button role="tab" id="tab-4" aria-controls="p-4" aria-selected="false"><span class="n">四</span>教<span class="dot" data-dot="4"></span></button>
     <button role="tab" id="tab-c" aria-controls="p-c" aria-selected="false">實證比對</button>
     <button role="tab" id="tab-x" aria-controls="p-x" aria-selected="false">繳交與匯出</button>
-    <button role="tab" id="tab-t" aria-controls="p-t" aria-selected="false">教師版</button>
   </nav>
 </div></header>
 
@@ -357,22 +356,6 @@
     <div class="exportbox" id="export-out">按「產生匯出內容」把目前這一組的校準結果、觀察記錄、重現矩陣、AI 協作歷程、查證紀錄、教學目標與方案骨架整理成一份文字稿。</div></div>
 </section>
 
-<!-- ═══ 教師版 ═══ -->
-<section role="tabpanel" id="p-t" aria-labelledby="tab-t">
-  <p class="lede">這一頁給老師。學生也看得到，沒關係。</p>
-  <div class="block"><h2><span class="tag">發現</span>語料池裡藏著一個跨組信度研究</h2>
-    <p>多組共用同一位說話人。同一份錄音、不同組別標出來的東西一不一樣，本身就是一個題目。</p>
-    <div class="tscroll"><table><thead><tr><th>說話人</th><th class="mono">時長</th><th>哪幾組拿到</th></tr></thead>
-      <tbody id="shared-rows"></tbody></table></div></div>
-  <div class="block"><h2><span class="tag">建議</span>對課程邏輯的建議</h2><div class="steps" id="advice"></div></div>
-  <div class="block"><h2><span class="tag">評分</span>建議的評分規準</h2>
-    <div class="tscroll"><table><thead><tr><th>項目</th><th class="mono">配分</th><th>說明</th></tr></thead>
-      <tbody id="rubric"></tbody></table></div></div>
-  <div class="block"><h2><span class="tag">看板</span>即時看板</h2>
-    <p>上課時開在投影幕上，全班的進度與觀察會自動更新。</p>
-    <p><a href="live.html" target="_blank" rel="noopener">開啟即時看板 →</a></p></div>
-</section>
-
 </main>
 
 <footer><div class="wrap">
@@ -451,21 +434,10 @@ function renderStatic(){
   $("#srclv-rows").innerHTML=D.srcLevels.map(function(r){
     return "<tr><td class=\"mono\">"+esc(r["層級"])+"</td><td>"+esc(r["名稱"])+"</td><td>"+esc(r["例子"])+
       "</td><td>"+esc(r["可不可以當唯一依據"])+"</td></tr>";}).join("");
-  $("#advice").innerHTML=D.advice.map(function(a,i){
-    return '<div class="stepc"><div class="no">'+(i+1)+'</div><div><h4>'+esc(a["建議"])+
-      "</h4><p>"+esc(a["說明"])+"</p></div></div>";}).join("");
-  $("#rubric").innerHTML=D.rubricIndex.map(function(r){
-    return "<tr><td><strong>"+esc(r["項目"])+"</strong></td><td class=\"mono\">"+esc(r["配分"])+
-      "</td><td>"+esc(r["說明"])+"</td></tr>";}).join("");
+
   $("#cmp-guide").innerHTML=D.readCompare.map(function(r){
     return "<tr><td><strong>"+esc(r["圖上看到"])+"</strong></td><td>"+esc(r["意思"])+
       "</td><td>"+esc(r["該怎麼辦"])+"</td></tr>";}).join("");
-  var sm=D.speakerMap;
-  $("#shared-rows").innerHTML=Object.keys(sm).filter(function(k){return sm[k].gs.length>1;})
-    .sort(function(a,b){return sm[b].gs.length-sm[a].gs.length;})
-    .map(function(k){return "<tr><td class=\"mono\">"+esc(k)+"</td><td class=\"mono\">"+mmss(sm[k].dur)+
-      "</td><td>"+esc(sm[k].gs.join("、"))+"</td></tr>";}).join("")
-    ||"<tr><td colspan=\"3\" class=\"muted\">沒有跨組共用的說話人</td></tr>";
   $("#denom-wrap").hidden=!CFG.requireDenominator;
   $("#denom-hint").hidden=!CFG.requireDenominator;
 }

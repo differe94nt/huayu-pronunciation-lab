@@ -28,6 +28,8 @@
     <button role="tab" id="tab-a" aria-controls="p-a" aria-selected="false">全班彙總</button>
     <button role="tab" id="tab-c" aria-controls="p-c" aria-selected="false">預測比對</button>
     <button role="tab" id="tab-d" aria-controls="p-d" aria-selected="false">討論題</button>
+    <button role="tab" id="tab-s" aria-controls="p-s" aria-selected="false">語料池</button>
+    <button role="tab" id="tab-n" aria-controls="p-n" aria-selected="false">課程筆記</button>
   </nav>
 </div></header>
 
@@ -84,6 +86,28 @@
     <div class="steps" id="questions"></div></div>
 </section>
 
+
+<section role="tabpanel" id="p-s" aria-labelledby="tab-s">
+  <div class="block"><h2><span class="tag">發現</span>語料池裡藏著一個跨組信度研究</h2>
+    <p>多組共用同一位說話人。同一份錄音、不同組別標出來的東西一不一樣，本身就是一個題目。
+      「討論題」分頁會自動算出他們的一致率。</p>
+    <div class="tscroll"><table><thead><tr><th>說話人</th><th class="mono">時長</th><th>哪幾組拿到</th></tr></thead>
+      <tbody id="shared-rows"></tbody></table></div></div>
+
+  <div class="block"><h2><span class="tag">全貌</span>全部組別與語料</h2>
+    <div class="tscroll"><table><thead><tr><th>組別</th><th>母語</th><th class="mono">S1</th><th class="mono">S2</th><th class="mono">S3</th></tr></thead>
+      <tbody id="all-groups"></tbody></table></div></div>
+</section>
+
+<section role="tabpanel" id="p-n" aria-labelledby="tab-n">
+  <div class="block"><h2><span class="tag">建議</span>對課程邏輯的建議</h2>
+    <div class="steps" id="advice"></div></div>
+  <div class="block"><h2><span class="tag">評分</span>建議的評分規準</h2>
+    <p>這是建議，不是給學生看的正式規準。要給學生看的話，自己另外整理。</p>
+    <div class="tscroll"><table><thead><tr><th>項目</th><th class="mono">配分</th><th>說明</th></tr></thead>
+      <tbody id="rubric"></tbody></table></div></div>
+</section>
+
 </main>
 
 <footer><div class="wrap">
@@ -112,6 +136,29 @@ $$("nav.rail button").forEach(function(b){b.addEventListener("click",function(){
 });});
 
 function pct(a,b){return b?Math.round(a/b*100):0;}
+/* ═══ 教師參考（原本在學生頁的「教師版」，搬過來）═══ */
+function renderTeacherRef(){
+  var sm=D.speakerMap;
+  $("#shared-rows").innerHTML=Object.keys(sm).filter(function(k){return sm[k].gs.length>1;})
+    .sort(function(a,b){return sm[b].gs.length-sm[a].gs.length;})
+    .map(function(k){
+      return "<tr><td class=\"mono\">"+esc(k)+"</td><td class=\"mono\">"+
+        Math.floor(sm[k].dur/60)+":"+String(sm[k].dur%60).padStart(2,"0")+
+        "</td><td>"+esc(sm[k].gs.join("、"))+"</td></tr>";}).join("")
+    ||'<tr><td colspan="3" class="muted">沒有跨組共用的說話人</td></tr>';
+
+  $("#all-groups").innerHTML=D.groups.map(function(g){
+    return "<tr><td>"+esc(g.n)+"</td><td>"+esc(g.l1)+"</td>"+
+      g.f.map(function(f){return '<td class="mono">'+esc(f[2])+"</td>";}).join("")+"</tr>";}).join("");
+
+  $("#advice").innerHTML=(D.advice||[]).map(function(a,i){
+    return '<div class="stepc"><div class="no">'+(i+1)+'</div><div><h4>'+esc(a["建議"])+
+      "</h4><p>"+esc(a["說明"])+"</p></div></div>";}).join("");
+
+  $("#rubric").innerHTML=(D.rubricIndex||[]).map(function(r){
+    return "<tr><td><strong>"+esc(r["項目"])+"</strong></td><td class=\"mono\">"+esc(r["配分"])+
+      "</td><td>"+esc(r["說明"])+"</td></tr>";}).join("");
+}
 
 function tick(){
   if(paused)return;
@@ -320,6 +367,7 @@ HPLData.load().then(function(data){
   D=data;
   $("#cmp-l1").innerHTML=D.l1s.map(function(x){return "<option>"+esc(x)+"</option>";}).join("");
   $("#poll-s").textContent=Math.round((CFG.pollMs||12000)/1000);
+  renderTeacherRef();
   var classes=CFG.classes&&CFG.classes.length?CFG.classes:[CFG.classId||"default"];
   $("#sel-class").innerHTML=classes.map(function(c){
     return '<option value="'+esc(c)+'"'+(c===CFG.classId?" selected":"")+">"+esc(c)+"</option>";}).join("");
