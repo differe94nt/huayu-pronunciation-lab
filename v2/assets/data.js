@@ -191,6 +191,15 @@
     /* ── 純文字頁 ── */
     D.manualHtml = files.manual.html;
     D.referencesHtml = files.references ? files.references.html : "";
+    /* 結構化的書目，讓不同頁面挑自己要顯示的欄位：
+       學生頁只列書目與連結，工作台列完整四欄。 */
+    D.references = files.references ? files.references.doc.sections.map(function (s) {
+      var t = s.tables[0];
+      return {
+        heading: s.heading, notes: s.notes, paras: s.paras,
+        head: t ? t.head : [], rows: t ? MD.rowsToObjects(t) : []
+      };
+    }) : [];
     D.evidenceHtml = files.evidence.html;
     D.promptText = (function () {
       var b = files.prompt.blocks.filter(function (x) { return x.t === "code"; });

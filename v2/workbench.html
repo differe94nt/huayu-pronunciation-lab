@@ -70,6 +70,14 @@
 
   <div class="block"><h2><span class="tag">摘要</span>語音檔案摘要</h2>
     <div class="panel"><div class="panel-bd" id="summary"></div></div></div>
+
+  <div class="block"><h2><span class="tag">出處</span>完整書目與查核記錄</h2>
+    <p>上表「證據」欄的甲／乙／丙／丁，依據就是這一份。
+      每一筆都標明<strong>它支持什麼</strong>與<strong>查核狀態</strong>——
+      有 DOI 的都用 Crossref 逐筆比對過作者、年份、卷期、頁碼。
+      <span class="muted">學生頁只會看到書目與連結，這兩欄留在這裡。</span></p>
+    <div class="prose" id="refs-full"></div>
+  </div>
 </section>
 
 <!-- ═══ 03 ═══ -->
@@ -360,6 +368,7 @@ document.body.insertAdjacentHTML("afterbegin",
 HPLData.load().then(function(data){
   D=data;
   renderBrief(); renderLearner(); renderBaselines();
+  $("#refs-full").innerHTML=D.referencesHtml||'<p class="muted">content/references.md 讀不到。</p>';
   $("#manual").innerHTML=D.manualHtml;
   $("#evidence").innerHTML=D.evidenceHtml;
   $("#cmp-l1").innerHTML=D.l1s.map(function(x){return "<option>"+esc(x)+"</option>";}).join("");

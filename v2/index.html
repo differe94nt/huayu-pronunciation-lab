@@ -597,7 +597,7 @@ function renderExamples(){
       '</span></td><td class="mono"><span class="ev '+e.evclass+'">'+esc(e.ev)+"</span></td></tr>";}).join("");
 
   $("#ex-tones").innerHTML=HPLViz.toneGrid(L);
-  $("#refs").innerHTML=D.referencesHtml||'<p class="muted">content/references.md 讀不到。</p>';
+  renderRefs();
 
   /* 這組母語可能用到的標籤，對照到學生標註時的選單 */
   var keys={}; L.e.forEach(function(e){if(e.key)keys[e.key]=true;});
@@ -618,6 +618,33 @@ $("#btn-refs").addEventListener("click",function(){
   this.textContent=on?"收合文獻清單":"展開文獻清單";
   if(on)el.scrollIntoView({behavior:"smooth",block:"nearest"});
 });
+
+/* 學生頁只列書目與連結——「它支持什麼」「查核」是給老師看的，
+   留在糾音工作台的「建立語音檔案」那一頁。 */
+function renderRefs(){
+  var el=$("#refs"); if(!el)return;
+  var secs=D.references||[];
+  if(!secs.length){el.innerHTML='<p class="muted">content/references.md 讀不到。</p>';return;}
+  var seenTable=false;
+  el.innerHTML=secs.map(function(s){
+    if(!s.rows.length){
+      /* 沒有表格的區塊：只留開頭的說明（解釋甲乙丙丁），
+         表格之後的評述（查核方法、更正記錄）是給老師看的，留在工作台。 */
+      if(seenTable)return "";
+      var body=s.notes.map(function(t){return "<blockquote>"+MD.inline(t)+"</blockquote>";}).join("")+
+               s.paras.map(function(t){return "<p>"+MD.inline(t)+"</p>";}).join("");
+      return body?("<h3>"+esc(s.heading)+"</h3>"+body):"";
+    }
+    seenTable=true;
+    var c0=s.head[0]||"書目", c1=s.head[1]||"連結";
+    return "<h3>"+esc(s.heading)+"</h3>"+
+      '<div class="tw"><table><thead><tr><th>'+esc(c0)+"</th><th>"+esc(c1)+
+      "</th></tr></thead><tbody>"+
+      s.rows.map(function(r){
+        return "<tr><td>"+MD.inline(r[c0]||"")+"</td><td>"+MD.inline(r[c1]||"")+"</td></tr>";
+      }).join("")+"</tbody></table></div>";
+  }).join("");
+}
 
 /* ═══ 記錄 ═══ */
 function recs(){return HPLStore.get("records");}
