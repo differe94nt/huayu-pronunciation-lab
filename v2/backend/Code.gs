@@ -20,8 +20,14 @@ function audioFolderId_() {
   return id;
 }
 
-/** 只有這裡列出的班級代號可以寫入。留空陣列 = 不限制。
- *  要跟 config.js 的 classId 一致。 */
+/** 只有這裡列出的班級代號可以讀寫。留空陣列 = 不限制（不建議）。
+ *
+ *  要同時開好幾班，就把代號都列進來，例如：
+ *      var ALLOWED_CLASSES = ['2026-fall-A', '2026-fall-B'];
+ *  資料會用 classId 欄位分開存在同一份試算表裡，彼此看不到。
+ *
+ *  ★ 這份清單必須跟 config.js 的 classes 一模一樣。
+ *    改完要重新部署（部署 → 管理部署作業 → 編輯 → 新版本）。 */
 var ALLOWED_CLASSES = ['2026-fall'];
 
 /* ═══════════════════════════════════════════════════════════
@@ -351,8 +357,18 @@ function unshareAudioFiles() {
 /**
  * 把全班資料匯出成一份 Markdown，存到雲端硬碟。學期末存檔用。
  */
-function exportClassMarkdown() {
-  var classId = ALLOWED_CLASSES[0] || '';
+function exportClassMarkdown(classId) {
+  if (!classId) {
+    if (ALLOWED_CLASSES.length > 1) {
+      Logger.log('有多個班級：' + ALLOWED_CLASSES.join('、') +
+        '。請改用 exportAllClasses()，或呼叫 exportClassMarkdown("班級代號")。');
+    }
+    classId = ALLOWED_CLASSES[0] || '';
+  }
+  if (ALLOWED_CLASSES.length && ALLOWED_CLASSES.indexOf(classId) < 0) {
+    Logger.log('班級代號不在 ALLOWED_CLASSES 裡：' + classId);
+    return '';
+  }
   var groups = readClass_(classId);
   var L = ['# ' + classId + ' 全班語音標註彙整', '', '產生時間：' + new Date().toLocaleString(), ''];
   groups.forEach(function (g) {

@@ -37,6 +37,8 @@
   <span class="statline"><b id="s-rules">0</b>&nbsp;條規律成立</span>
   <span class="statline"><b id="s-denom">0%</b>&nbsp;有分母</span>
   <span style="flex:1"></span>
+  <label class="fld" for="sel-class" style="margin:0">班級</label>
+  <select id="sel-class"></select>
   <button class="act tiny" id="btn-pause">暫停更新</button>
   <button class="act tiny" id="btn-now">立刻更新</button>
   <span class="conn" id="conn"><i></i><span id="conn-t">載入中</span></span>
@@ -318,6 +320,13 @@ HPLData.load().then(function(data){
   D=data;
   $("#cmp-l1").innerHTML=D.l1s.map(function(x){return "<option>"+esc(x)+"</option>";}).join("");
   $("#poll-s").textContent=Math.round((CFG.pollMs||12000)/1000);
+  var classes=CFG.classes&&CFG.classes.length?CFG.classes:[CFG.classId||"default"];
+  $("#sel-class").innerHTML=classes.map(function(c){
+    return '<option value="'+esc(c)+'"'+(c===CFG.classId?" selected":"")+">"+esc(c)+"</option>";}).join("");
+  $("#sel-class").addEventListener("change",function(){
+    /* 換班要整頁重載——storeId 是在啟動時就決定的 */
+    location.search="?class="+encodeURIComponent($("#sel-class").value);
+  });
   return HPLStore.init();
 }).then(function(){
   tick();

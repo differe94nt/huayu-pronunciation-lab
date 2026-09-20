@@ -6,8 +6,19 @@
 window.HPL_CONFIG = {
 
   /* ── 1. 班級代號 ───────────────────────────────────────────
-     同一份網頁可以給不同班用。換班只要改這一行，
-     資料就會分開存，不會互相看到。                              */
+     資料依班級分開存，不同班不會互相看到。
+
+     只開一班：classes 留一個，classId 填同一個就好。
+
+     同時開好幾班：把代號都列進 classes，然後發給每一班
+     專屬的網址，網頁會自己切換：
+         .../v2/?class=2026-fall-A
+         .../v2/?class=2026-fall-B
+     網址沒帶 ?class= 時，用 classId 這一個當預設。
+
+     ★ 這份清單必須跟 backend/Code.gs 的 ALLOWED_CLASSES 一模一樣，
+       否則學生存得下去、後端會擋掉。                            */
+  classes: ["2026-fall"],
   classId: "2026-fall",
 
   /* ── 2. 音檔要從哪裡來 ──────────────────────────────────────
@@ -41,7 +52,7 @@ window.HPL_CONFIG = {
 
      照 backend/SETUP.md 部署之後，把它給你的網址
      （https://script.google.com/macros/s/..../exec）貼進這一行。 */
-  backendUrl: "",
+  backendUrl: "https://script.google.com/macros/s/AKfycbwTLoM_qo1WETYhWKw8Saa7yTptnNYlMg4xBm8I0piOF1jN87DgyK3WAsYg6tig2eSy/exec",
 
   /* 教師看板多久抓一次新資料（毫秒）。太短會吃掉 Apps Script 配額。*/
   pollMs: 12000,
@@ -58,3 +69,27 @@ window.HPL_CONFIG = {
   /* ── 6. 內容檔案放哪裡 ──────────────────────────────────────  */
   contentBase: "content/"
 };
+
+/* ── 從網址的 ?class= 決定這一次算哪一班 ──────────────────────
+   只認 classes 裡列出的代號。網址打錯字不會偷偷開一個新班級，
+   而是退回預設值並在畫面上提示——否則學生的資料會存進一個
+   老師永遠不會去看的地方。                                      */
+(function (C) {
+  if (!C) return;
+  var list = (C.classes && C.classes.length) ? C.classes.slice() : [C.classId];
+  C.classes = list;
+  if (list.indexOf(C.classId) < 0) C.classId = list[0];
+
+  var q = "";
+  try { q = (typeof location !== "undefined" && location.search) || ""; } catch (e) {}
+  var m = /[?&]class=([^&#]*)/.exec(q);
+  if (!m) return;
+
+  var want = "";
+  try { want = decodeURIComponent(m[1]).trim(); } catch (e) { want = String(m[1]).trim(); }
+  if (!want) return;
+
+  if (list.indexOf(want) >= 0) { C.classId = want; return; }
+  C.classWarning = "網址指定的班級「" + want + "」不在 config.js 的 classes 清單裡，" +
+    "已改用「" + C.classId + "」。請確認發出去的連結。";
+})(window.HPL_CONFIG);

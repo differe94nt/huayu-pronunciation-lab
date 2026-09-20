@@ -31,6 +31,7 @@
   <span class="gfiles" id="gfiles"></span>
   <span class="gnote" id="gnote"></span>
   <span style="flex:1"></span>
+  <span class="chip n mono" id="class-chip" title="班級代號"></span>
   <span class="conn" id="conn"><i></i><span id="conn-t">載入中</span></span>
 </div></div>
 
@@ -925,6 +926,8 @@ HPLData.load().then(function(data){
     }
   });
   switchGroup(); renderConn(); claudeCaps();
+  $("#class-chip").textContent=CFG.classId||"default";
+  if(CFG.classWarning)setTimeout(function(){toast(CFG.classWarning);},600);
   var b=document.getElementById("boot"); if(b)b.remove();
 }).catch(function(e){
   var b=document.getElementById("boot");

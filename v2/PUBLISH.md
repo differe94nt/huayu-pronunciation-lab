@@ -63,7 +63,7 @@ git push -u origin main
 測試指令（在發布 repo 根目錄）：
 
 ```bash
-node --test v2/tests/audio.test.cjs
+node --test v2/tests/*.test.cjs
 python3 -m unittest discover -s v2/tests -p '*_test.py'
 python3 -m http.server 8000
 # 瀏覽 http://localhost:8000/v2/_selftest.html

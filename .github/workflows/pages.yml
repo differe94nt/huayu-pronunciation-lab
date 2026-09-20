@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v6
       - name: Test audio access and publishing
         run: |
-          node --test v2/tests/audio.test.cjs
+          node --test v2/tests/*.test.cjs
           python3 -m unittest discover -s v2/tests -p '*_test.py'
       - uses: actions/configure-pages@v5
       - name: Prepare public website
