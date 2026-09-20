@@ -81,7 +81,7 @@
       <div class="panel-bd">
         <div class="formgrid g3">
           <div><label class="fld" for="r-spk">音檔</label><select class="inp" id="r-spk"></select></div>
-          <div><label class="fld" for="r-tc">時間碼</label><input type="text" id="r-tc" class="mono" placeholder="00:37"></div>
+          <div><label class="fld" for="r-tc">時間碼</label><input type="text" id="r-tc" class="mono" placeholder="0:37 或 37" title="可以直接打秒數，例如 83 會變成 1:23"></div>
           <div><label class="fld" for="r-word">目標字詞</label><input type="text" id="r-word" placeholder="房間 fángjiān"></div>
           <div><label class="fld" for="r-lv">面向</label><select class="inp" id="r-lv"></select></div>
           <div><label class="fld" for="r-tagsel">現象標籤</label><select class="inp" id="r-tagsel"></select></div>
@@ -304,6 +304,22 @@ var esc=MD.esc;
 var CFG=window.HPL_CONFIG||{};
 var D=null, gid=null, players=[], sampleFn=null, dlFn=null, abortCtl=null;
 
+/* ── 時間碼容錯 ──────────────────────────────────────────
+   雲端播放器模式抓不到時間碼，學生得看著播放器自己打。
+   所以這裡盡量不要挑剔格式：
+     83      → 1:23      （純秒數）
+     1.23    → 1:23
+     1分23秒 → 1:23
+     1:23    → 1:23      （本來就對的不動）
+   完全看不懂就原樣留著，不要把學生打的東西吃掉。            */
+function normTC(v){
+  v=String(v||"").trim();
+  if(!v)return "";
+  var m=v.match(/^(\d+)\s*[:：.．分]\s*(\d{1,2})\s*秒?$/);
+  if(m){var s=Math.min(59,Number(m[2]));return Number(m[1])+":"+String(s).padStart(2,"0");}
+  if(/^\d+$/.test(v)){var n=Number(v);return Math.floor(n/60)+":"+String(n%60).padStart(2,"0");}
+  return v;
+}
 var mmss=function(s){return Math.floor(s/60)+":"+String(Math.round(s%60)).padStart(2,"0");};
 var tT; function toast(m){var t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(tT);tT=setTimeout(function(){t.hidden=true;},2400);}
 function copyText(txt,label){
@@ -451,6 +467,7 @@ function renderRecs(){
   renderMatrix(); updateDots(); renderRuleSelects();
 }
 $("#btn-add-rec").addEventListener("click",function(){
+  $("#r-tc").value=normTC($("#r-tc").value);
   var word=$("#r-word").value.trim(), desc=$("#r-desc").value.trim(), tc=$("#r-tc").value.trim();
   if(!word||!tc){toast("時間碼與目標字詞都要填");return;}
   var g=G(), tag=$("#r-tagsel").value;
@@ -464,6 +481,7 @@ $("#btn-add-rec").addEventListener("click",function(){
   $("#r-word").value="";$("#r-desc").value="";$("#r-tc").value="";$("#r-denom").value="";
   toast("已新增");
 });
+$("#r-tc").addEventListener("blur",function(){this.value=normTC(this.value);});
 $("#btn-demo-rec").addEventListener("click",function(){
   $("#r-tc").value="00:37";$("#r-word").value="房間 fángjiān";
   $("#r-desc").value="「房」第二聲上升幅度較小，起點與終點差距約一度";
