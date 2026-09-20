@@ -38,6 +38,10 @@
         K.groupCount = Object.keys(K.groups).length;
         K.rate = K.denom > 0 ? K.hits / K.denom : null;
         K.coverage = L.speakerCount > 0 ? K.speakerCount / L.speakerCount : null;
+        /* 沒填分母時的替代：這個現象佔全部標註的幾成。
+           這是「佔比」不是「出現率」——分母是學生標了多少東西，
+           不是這個音有多少次機會出現。兩者不能混為一談。 */
+        K.share = L.records > 0 ? K.hits / L.records : null;
       });
     });
     return byL1;
@@ -67,7 +71,7 @@
           name: (D.keyName && D.keyName[key]) || key,
           level: (D.keyLevel && D.keyLevel[key]) || "",
           pred: null, predW: null, sev: "", ev: "", targets: [],
-          hits: 0, speakerCount: 0, groupCount: 0, rate: null, coverage: null,
+          hits: 0, speakerCount: 0, groupCount: 0, rate: null, coverage: null, share: null,
           baseline: (D.baseline && D.baseline[key]) || null
         };
         order.push(key);
@@ -90,7 +94,8 @@
     Object.keys(obs.keys).forEach(function (k) {
       var s = slot(k), K = obs.keys[k];
       s.hits = K.hits; s.speakerCount = K.speakerCount; s.groupCount = K.groupCount;
-      s.rate = K.rate; s.coverage = K.coverage; s.denom = K.denom; s.tri = K.tri;
+      s.rate = K.rate; s.coverage = K.coverage; s.share = K.share;
+      s.denom = K.denom; s.tri = K.tri;
     });
 
     /* 判定 */
@@ -102,8 +107,13 @@
         : predicted && !observed ? "miss"
         : !predicted && observed ? "extra"
         : "na";
-      /* 觀察側用來排序的值：有分母用出現率，沒有就用覆蓋率 */
-      s.obsValue = s.rate != null ? s.rate : s.coverage;
+      /* 觀察側用來排序的值，依序退而求其次：
+           1. 出現率  hits / 分母        ← 最有力，但要學生填分母
+           2. 佔比    hits / 全部標註數   ← 時間不夠時的替代
+           3. 覆蓋率  幾位說話人出現過    ← 連標註數都很少時
+         三者單位不同，所以畫面上一定要標明用的是哪一種。 */
+      s.obsValue = s.rate != null ? s.rate
+                 : (s.share != null ? s.share : s.coverage);
     });
 
     var list = order.map(function (k) { return rows[k]; });
@@ -118,6 +128,8 @@
       speakerCount: obs.speakerCount, records: obs.records,
       hasDenominator: obs.withDenom > 0,
       denomShare: obs.records ? obs.withDenom / obs.records : 0,
+      /* 這次比對實際用的是哪一種指標 */
+      metric: obs.withDenom > 0 ? "rate" : (obs.records > 0 ? "share" : "coverage"),
       agreement: agreement(list)
     };
   }

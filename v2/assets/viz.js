@@ -96,7 +96,12 @@
     }
 
     var maxObs = Math.max.apply(null, rows.map(function (r) { return r.obsValue || 0; }).concat([0.0001]));
-    var unit = result.hasDenominator ? "出現率" : "說話人覆蓋率";
+    var METRIC = {
+      rate: "出現率（出現次數 ÷ 可出現次數）",
+      share: "佔比（這個現象佔全部標註的幾成）",
+      coverage: "說話人覆蓋率（幾位說話人出現過）"
+    };
+    var unit = METRIC[result.metric] || "觀察";
 
     var html = '<div class="cmplegend">' +
       '<span><i style="background:var(--rule-strong)"></i>預測強度（序位）</span>' +
@@ -113,8 +118,11 @@
         ? '<div class="cmpbar" title="' + MD.esc(r.baseline.cite) + '"><i style="width:' +
           (r.baseline.v / maxObs * 100).toFixed(1) + '%;background:var(--ochre)"></i></div>'
         : "";
-      var val = r.obsValue == null ? "—"
-        : (r.rate != null ? (r.rate * 100).toFixed(0) + "%" : r.speakerCount + "/" + result.speakerCount + " 人");
+      var val;
+      if (r.obsValue == null) val = "—";
+      else if (result.metric === "rate" && r.rate != null) val = (r.rate * 100).toFixed(0) + "%";
+      else if (result.metric === "share" && r.share != null) val = r.hits + " 筆 · " + (r.share * 100).toFixed(0) + "%";
+      else val = r.speakerCount + "/" + result.speakerCount + " 人";
       return '<div class="cmprow">' +
         '<div class="lbl">' + MD.esc(r.name) +
           (r.ev ? ' <span class="ev ' + r.evclass + '">' + MD.esc(r.ev) + "</span>" : "") + "</div>" +

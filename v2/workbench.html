@@ -303,7 +303,10 @@ function runCompare(){
     $("#cmp-meta").innerHTML="對照對象："+esc(res.learner?(res.learner.name+"（"+res.learner.l1+"）"):"（沒有這個母語的預測檔案）")+
       "　·　觀察筆數 "+res.records+"　·　說話人 "+res.speakerCount+" 位"+
       (cd.local?"　·　<strong>離線模式：只看得到這台電腦存過的組別。要看到全班，請在 config.js 填 backendUrl。</strong>":"")+
-      (res.hasDenominator?("　·　"+Math.round(res.denomShare*100)+"% 的記錄有分母"):"　·　沒有記錄填分母，只能用覆蓋率");
+      (res.hasDenominator?("　·　"+Math.round(res.denomShare*100)+"% 的記錄有分母"):"")+
+      ({rate:"　·　指標：出現率",
+        share:"　·　指標：佔比（沒填分母，<strong>不是出現率</strong>）",
+        coverage:"　·　指標：說話人覆蓋率"}[res.metric]||"");
 
     $("#cmp-out").innerHTML=res.rows.length?HPLViz.compareBars(res)
       :'<p class="muted">這個母語還沒有可比對的學生資料。</p>';

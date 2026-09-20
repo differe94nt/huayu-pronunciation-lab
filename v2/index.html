@@ -15,6 +15,7 @@
   <div class="principle">口音不等於錯誤——先分 A／B／C，再決定教什麼</div>
   <nav class="rail" role="tablist">
     <button role="tab" id="tab-o" aria-controls="p-o" aria-selected="true">總覽與分工</button>
+    <button role="tab" id="tab-ex" aria-controls="p-ex" aria-selected="false">可能出現的偏誤</button>
     <button role="tab" id="tab-1" aria-controls="p-1" aria-selected="false"><span class="n">一</span>聽<span class="dot" data-dot="1"></span></button>
     <button role="tab" id="tab-2" aria-controls="p-2" aria-selected="false"><span class="n">二</span>問<span class="dot" data-dot="2"></span></button>
     <button role="tab" id="tab-3" aria-controls="p-3" aria-selected="false"><span class="n">三</span>查<span class="dot" data-dot="3"></span></button>
@@ -50,6 +51,41 @@
     <p>按角色分，不要按步驟接力。硬規定：六個人都要聽完三份錄音。</p>
     <div class="roles" id="roles"></div>
     <div class="rowbtns" style="margin-top:12px"><button class="act" id="btn-save-roles">儲存分工</button></div></div>
+</section>
+
+<!-- ═══ 可能出現的偏誤 ═══ -->
+<section role="tabpanel" id="p-ex" aria-labelledby="tab-ex">
+  <p class="lede">標註之前先看這一頁，知道「可以往哪裡聽」。
+    這裡列的是<strong>別人根據音系對比推測出來的可能情形，不是答案</strong>——
+    你們的語料裡可能有、也可能沒有，沒有本身就是發現。</p>
+
+  <div class="note warn" style="margin-bottom:22px">
+    <strong>請不要照著抄。</strong>這一頁的用途是幫你想「該注意什麼」，不是幫你填答案。
+    真正要寫進報告的是<strong>你們自己在音檔裡聽到的</strong>，而且每一筆都要有時間碼。
+    如果你聽到的跟這裡寫的不一樣，以你聽到的為準。
+  </div>
+
+  <div class="block"><h2><span class="tag">對象</span>這組母語可能出現什麼</h2>
+    <p id="ex-sub"></p>
+    <div class="tscroll"><table>
+      <thead><tr><th>面向</th><th>可能的目標音</th><th>可能讀成</th><th>例子</th>
+        <th class="mono">嚴重度</th><th class="mono">證據</th></tr></thead>
+      <tbody id="ex-rows"></tbody></table></div>
+    <p class="muted mini">嚴重度「高」＝一出現就可能讓聽者聽成別的字。
+      證據欄：甲＝有針對這個母語的實證研究；乙＝有實證但對象不同；丙＝只有推論；丁＝與現有研究不符。</p>
+  </div>
+
+  <div class="block"><h2><span class="tag">聲調</span>四個聲調可能長什麼樣</h2>
+    <p>虛線是標準的調型，實線是推測這組母語者可能讀成的樣子。
+      形狀不一樣 → 聲調「種類」抓錯；形狀一樣但比較扁 → 音高範圍用得不夠寬。</p>
+    <div id="ex-tones"></div>
+  </div>
+
+  <div class="block"><h2><span class="tag">標籤</span>現象標籤是什麼意思</h2>
+    <p>標註時要從下拉選單挑一個「現象標籤」。標籤就是把你聽到的東西歸類，
+      同一個標籤累積夠多次才會變成規律（拿到 R1、R2 編號）。</p>
+    <div id="ex-tags"></div>
+  </div>
 </section>
 
 <!-- ═══ 一 聽 ═══ -->
@@ -94,10 +130,13 @@
         </div>
         <div style="margin-top:12px"><label class="fld" for="r-desc">聽到什麼（寫你聽到的，不要寫結論）</label>
           <input type="text" id="r-desc" placeholder="「房」第二聲上升幅度較小，起點與終點差距約一度"></div>
-        <div class="note warn mini" id="denom-hint" style="margin-top:10px">
-          <strong>分母是什麼：</strong>這一段語料裡，這個音（調、規則）本來有幾次機會出現。
-          例如 S1 這一分鐘裡「二聲」共出現 12 次，其中 7 次上升不足 → 分母填 12，這筆觀察記 1 次。
-          沒有分母，實證比對只能算「幾位說話人出現過」，算不出出現率。
+        <div class="note mini" id="denom-hint" style="margin-top:10px">
+          <strong>分母可以留空。</strong>時間夠的話再填：這一段裡這個音（調、規則）本來有幾次機會出現。
+          例如你聽的那 30 秒裡「二聲」共出現 12 次，其中 7 次上升不足 → 分母填 12，這一筆記 1 次。
+          <br><strong>留空也算得出東西</strong>，只是指標不一樣，實證比對會自動退而求其次：
+          <br>① 有填分母 → <strong>出現率</strong>（出現次數 ÷ 可出現次數）。最有力，可以跟文獻比。
+          <br>② 沒填分母 → <strong>佔比</strong>（這個現象佔你們全部標註的幾成）。看得出誰最常被標到，但<strong>不是出現率</strong>——分母是你們標了多少，不是這個音有多少次機會。
+          <br>③ 標註很少時 → <strong>說話人覆蓋率</strong>（幾位說話人出現過）。
         </div>
         <div class="rowbtns" style="margin-top:12px">
           <button class="act primary" id="btn-add-rec">新增觀察</button>
@@ -108,6 +147,16 @@
     <div class="reclist" id="reclist" style="margin-top:16px"></div></div>
 
   <div class="block"><h2><span class="tag">歸納</span>重現矩陣</h2>
+    <div class="note" style="margin-bottom:14px">
+      <strong>R1、R2 是什麼？</strong>是「成立的規律」的編號，由這張表自動給。<br>
+      你每標一筆，同樣的「面向＋標籤」就會累積到同一列。當某一列<strong id="mtx-rule-cond">達到門檻</strong>時，
+      它就從「個別觀察」升格成<strong>規律</strong>，拿到 R1、R2… 的編號。<br><br>
+      <strong>為什麼重要：</strong>後面三步都只認編號——
+      步驟二的提示詞、步驟三的查證、步驟四的教學目標，選單裡只會出現拿到編號的那幾列。
+      一條都沒成立的話，那三個選單會是空的。<br>
+      <span class="muted">沒拿到編號不代表你標錯，只代表它目前只出現在一位說話人身上，還不能說是「規律」——
+      這正是這個單元要練的判斷。</span>
+    </div>
     <p id="mtx-sub"></p>
     <div class="tscroll"><table class="mtx">
       <thead><tr id="mtx-head"></tr></thead>
@@ -211,15 +260,16 @@
       <button class="act primary" id="btn-build">產生方案骨架</button>
       <button class="act" id="btn-copy-plan">複製</button></div>
     <div class="panel"><div class="panel-bd"><div class="plan" id="plan-out"></div></div></div></div>
-  <div class="block"><h2><span class="tag">驗證</span>五分鐘試教</h2>
-    <p>組間互換，結束只問一個問題：「哪裡你還是不知道要怎麼做？」</p>
+  <div class="block"><h2><span class="tag">反思</span>與 AI 共編教案的活動反思</h2>
+    <p>這一段是發表時要講的。三個問題，每題兩三句就好。</p>
     <div class="panel"><div class="panel-bd">
-      <div><label class="fld" for="tt-who">試教對象組別</label><input type="text" id="tt-who" placeholder="第 X 組"></div>
-      <div style="margin-top:10px"><label class="fld" for="tt-fb">對方說了什麼（原話照抄）</label>
-        <textarea id="tt-fb" rows="2" placeholder="照抄對方的原話，不要美化"></textarea></div>
-      <div style="margin-top:10px"><label class="fld" for="tt-fix">我們因此改了什麼</label>
-        <textarea id="tt-fix" rows="2"></textarea></div>
-      <div class="rowbtns" style="margin-top:12px"><button class="act" id="btn-save-tt">儲存試教回饋</button></div>
+      <div><label class="fld" for="tt-who">這份教案，哪些是 AI 給的、哪些是你們自己決定的</label>
+        <textarea id="tt-who" rows="2" placeholder="例：練習詞是 AI 生的，但我們刪掉了三個太難的；診斷說明是我們自己寫的，因為 AI 那版學習者看不懂"></textarea></div>
+      <div style="margin-top:10px"><label class="fld" for="tt-fb">AI 哪裡幫得上忙、哪裡幫不上</label>
+        <textarea id="tt-fb" rows="2" placeholder="例：生練習詞很快；但它講不出「舌頭要放哪裡」這種體感，那一段我們得自己補"></textarea></div>
+      <div style="margin-top:10px"><label class="fld" for="tt-fix">如果再做一次，哪一步你們會換個做法</label>
+        <textarea id="tt-fix" rows="2" placeholder="例：我們一開始就問 AI，結果被它的答案帶著走。下次會先自己聽完再問"></textarea></div>
+      <div class="rowbtns" style="margin-top:12px"><button class="act" id="btn-save-tt">儲存反思</button></div>
     </div></div></div>
 </section>
 
@@ -448,6 +498,39 @@ function renderContrast(){
       "</td><td>"+MD.inline(r[3])+"</td></tr>";}).join("");
 }
 
+/* ═══ 可能出現的偏誤（標註前的參考頁）═══ */
+function renderExamples(){
+  var g=G();
+  var L=HPLCompare.learnerFor(D,g.l1);
+  if(!L){
+    $("#ex-sub").textContent="";
+    $("#ex-rows").innerHTML='<tr><td colspan="6" class="muted">content/learners.md 裡沒有「'+esc(g.l1)+'」的檔案。</td></tr>';
+    $("#ex-tones").innerHTML=""; $("#ex-tags").innerHTML=""; return;
+  }
+  $("#ex-sub").innerHTML="本組母語是 <strong>"+esc(g.l1)+"</strong>。下面是工作台對這個母語的推測，"+
+    "共 "+L.e.length+" 項，依嚴重度排序。<span class=\"muted\">資料來源："+esc(L.src)+"</span>";
+
+  var sorted=L.e.slice().sort(function(a,b){return (b.sevw*10+b.w)-(a.sevw*10+a.w);});
+  $("#ex-rows").innerHTML=sorted.map(function(e){
+    return "<tr><td>"+esc(e.lv)+"</td><td>"+MD.inline(e.target)+"</td><td>"+MD.inline(e.realized)+
+      "</td><td>"+MD.inline(e.example)+'</td><td><span class="chip '+e.sevclass+'">'+esc(e.sev)+
+      '</span></td><td class="mono"><span class="ev '+e.evclass+'">'+esc(e.ev)+"</span></td></tr>";}).join("");
+
+  $("#ex-tones").innerHTML=HPLViz.toneGrid(L);
+
+  /* 這組母語可能用到的標籤，對照到學生標註時的選單 */
+  var keys={}; L.e.forEach(function(e){if(e.key)keys[e.key]=true;});
+  $("#ex-tags").innerHTML='<div class="tscroll"><table><thead><tr>'+
+    "<th>面向</th><th>標註時選這個標籤</th><th>大致意思</th></tr></thead><tbody>"+
+    D.levels.map(function(lv){
+      return lv.tags.filter(function(t){return t.key&&keys[t.key];}).map(function(t){
+        var kb=D.kb[t.tag]||D.kbDefault;
+        return "<tr><td>"+esc(lv.n)+"</td><td><strong>"+esc(t.tag)+"</strong></td><td>"+
+          MD.inline(String(kb.d||"").split("。")[0]+"。")+"</td></tr>";
+      }).join("");
+    }).join("")+"</tbody></table></div>";
+}
+
 /* ═══ 記錄 ═══ */
 function recs(){return HPLStore.get("records");}
 function renderRecs(){
@@ -516,8 +599,9 @@ function renderMatrix(){
     sl.map(function(s){return '<th class="mono">'+s+"</th>";}).join("")+
     '<th class="mono">合計</th><th class="mono">分母</th><th class="mono">出現率</th><th>判斷</th><th>編號</th>';
   var th=CFG.ruleThreshold||{speakers:2,total:3};
-  $("#mtx-sub").textContent="成立門檻：至少 "+th.speakers+" 位說話人出現，且合計至少 "+th.total+
-    " 次。達標的會標上編號 R1、R2…，後面的步驟都用編號指涉。";
+  var condTxt="至少 "+th.speakers+" 位說話人都出現過，而且合計至少 "+th.total+" 次";
+  var ce=$("#mtx-rule-cond"); if(ce)ce.textContent=condTxt;
+  $("#mtx-sub").textContent="成立門檻："+condTxt+"。";
   $("#mtx-rows").innerHTML=rows.length?rows.map(function(b){
     var id=b.isRule?("R"+(++n)):"";
     b.rid=id;
@@ -694,7 +778,10 @@ function refreshCompare(){
     $("#cmp-meta").innerHTML="對照對象："+esc(learnerName)+
       "　·　觀察筆數 "+res.records+"　·　說話人 "+res.speakerCount+" 位"+
       (cd.local?"　·　<strong>離線模式：只看得到這台電腦存過的組別</strong>":"")+
-      (res.hasDenominator?("　·　"+Math.round(res.denomShare*100)+"% 的記錄有分母"):"　·　沒有任何記錄填了分母，只能用覆蓋率");
+      (res.hasDenominator?("　·　"+Math.round(res.denomShare*100)+"% 的記錄有分母"):"")+
+      ({rate:"　·　指標：出現率",
+        share:"　·　指標：佔比（沒填分母，改用「佔全部標註的幾成」，<strong>不是出現率</strong>）",
+        coverage:"　·　指標：說話人覆蓋率"}[res.metric]||"");
 
     $("#cmp-out").innerHTML=res.rows.length
       ? HPLViz.compareBars(res)
@@ -913,7 +1000,7 @@ function renderConn(){
 
 /* ═══ 切換組別 ═══ */
 function switchGroup(){
-  renderGroupBar(); renderPlayers(); renderContrast();
+  renderGroupBar(); renderPlayers(); renderContrast(); renderExamples();
   HPLStore.setGroup(gid).then(function(){
     metaToForm(); renderRecs(); renderAi(); renderSrc();
     $("#plan-out").textContent=""; lastCompare=null;
