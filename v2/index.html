@@ -31,6 +31,8 @@
   <span class="gfiles" id="gfiles"></span>
   <span class="gnote" id="gnote"></span>
   <span style="flex:1"></span>
+  <label class="fld" for="sel-class" id="class-lab" style="margin:0" hidden>班級</label>
+  <select id="sel-class" hidden></select>
   <span class="chip n mono" id="class-chip" title="班級代號"></span>
   <span class="conn" id="conn"><i></i><span id="conn-t">載入中</span></span>
 </div></div>
@@ -926,7 +928,20 @@ HPLData.load().then(function(data){
     }
   });
   switchGroup(); renderConn(); claudeCaps();
-  $("#class-chip").textContent=CFG.classId||"default";
+  var classes=CFG.classes&&CFG.classes.length?CFG.classes:[CFG.classId||"default"];
+  if(classes.length>1){
+    /* 有多個班級才顯示下拉選單；只有一班時顯示唯讀標籤就好 */
+    $("#class-chip").hidden=true;
+    $("#class-lab").hidden=false; $("#sel-class").hidden=false;
+    $("#sel-class").innerHTML=classes.map(function(c){
+      return '<option value="'+esc(c)+'"'+(c===CFG.classId?" selected":"")+">"+esc(c)+"</option>";}).join("");
+    $("#sel-class").addEventListener("change",function(){
+      /* 換班要整頁重載——班級是在啟動時決定的 */
+      location.search="?class="+encodeURIComponent($("#sel-class").value);
+    });
+  }else{
+    $("#class-chip").textContent=CFG.classId||"default";
+  }
   if(CFG.classWarning)setTimeout(function(){toast(CFG.classWarning);},600);
   var b=document.getElementById("boot"); if(b)b.remove();
 }).catch(function(e){
