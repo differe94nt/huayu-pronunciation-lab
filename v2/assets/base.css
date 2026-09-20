@@ -114,6 +114,7 @@ button.act:disabled{opacity:.45;cursor:not-allowed}
 button.act.primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-indigo);font-weight:700}
 button.act.primary:hover:not(:disabled){filter:brightness(1.08)}
 button.act.tiny{padding:3px 9px;font-size:11.5px}
+button.act.danger{color:var(--crimson);border-color:var(--crimson);background:var(--crimson-soft);font-weight:700}
 .rowbtns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 
 label.fld{display:block;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
